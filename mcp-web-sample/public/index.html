@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MCP Web Sample</title>
+    <link rel="stylesheet" href="/styles.css?v=1" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="dot" id="statusDot"></span>
+        <strong>MCP Web Sample</strong>
+        <span class="sub" id="serverUrl">Mail + Teams</span>
+      </div>
+      <div class="account">
+        <span id="userLabel">확인 중…</span>
+        <a id="loginBtn" class="btn" href="/auth/login?source=mail">Microsoft 로그인</a>
+        <button id="logoutBtn" class="btn ghost" hidden>로그아웃</button>
+      </div>
+    </header>
+
+    <!-- Checkbox bar: choose Mail, Teams, or both. Persisted to localStorage. -->
+    <div id="sourceBar">
+      <span class="sub">사용할 MCP:</span>
+      <label class="source-toggle" data-source="mail">
+        <input type="checkbox" id="src-mail" checked />
+        <span class="dot" id="dot-mail"></span>
+        Mail
+        <a class="connect-link" id="connect-mail" hidden href="/auth/login?source=mail">연결</a>
+      </label>
+      <label class="source-toggle" data-source="teams">
+        <input type="checkbox" id="src-teams" checked />
+        <span class="dot" id="dot-teams"></span>
+        Teams
+        <a class="connect-link" id="connect-teams" hidden href="/auth/login?source=teams">연결</a>
+      </label>
+    </div>
+
+    <main>
+      <aside id="sidebar">
+        <h2>도구 <span id="toolCount" class="badge">0</span></h2>
+        <input id="toolFilter" placeholder="도구 검색…" />
+        <ul id="toolList"></ul>
+      </aside>
+
+      <section id="chatPane">
+        <div id="loginGate" class="login-gate" hidden>
+          <div class="login-gate-card">
+            <strong>로그인이 필요합니다</strong>
+            <p>Mail/Teams MCP를 사용하려면 먼저 Microsoft 계정으로 로그인하세요.</p>
+            <a class="btn" href="/auth/login?source=mail">Microsoft 로그인</a>
+          </div>
+        </div>
+        <div id="messages" class="messages">
+          <div class="msg system">
+            상단 체크박스에서 사용할 MCP(Mail/Teams)를 선택한 뒤 요청을 입력하세요.
+            <br />예: "안 읽은 메일 검색해줘", "○○ 팀 채널에 메시지 보내줘"
+          </div>
+        </div>
+        <form id="chatForm" class="composer">
+          <input id="chatInput" placeholder="요청을 입력하세요…" autocomplete="off" />
+          <button class="btn" type="submit">보내기</button>
+        </form>
+        <p class="hint" id="llmHint"></p>
+      </section>
+    </main>
+
+    <!-- Direct tool invocation modal -->
+    <div id="toolModal" class="modal" hidden>
+      <div class="modal-card">
+        <div class="modal-head">
+          <strong id="toolModalName"></strong>
+          <button id="toolModalClose" class="btn ghost">✕</button>
+        </div>
+        <p id="toolModalDesc" class="sub"></p>
+        <label>arguments (JSON)</label>
+        <textarea id="toolArgs" rows="8">{}</textarea>
+        <button id="toolRun" class="btn">실행</button>
+        <pre id="toolResult" class="result"></pre>
+      </div>
+    </div>
+
+    <script src="/app.js?v=1"></script>
+  </body>
+</html>

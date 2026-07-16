@@ -1,0 +1,23 @@
+{
+  "name": "teams-mcp-web-sample",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sample web app that routes user requests through the Work IQ Teams MCP server (mcp_TeamsServer).",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "@azure/identity": "^4.13.1",
+    "@azure/msal-node": "^2.16.2",
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "openai": "^4.77.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

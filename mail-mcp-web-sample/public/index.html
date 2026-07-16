@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mail MCP Web Sample</title>
+    <link rel="stylesheet" href="/styles.css?v=2" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="dot" id="statusDot"></span>
+        <strong>Mail MCP Web Sample</strong>
+        <span class="sub" id="serverUrl"></span>
+      </div>
+      <div class="account">
+        <span id="userLabel">확인 중…</span>
+        <a id="loginBtn" class="btn" href="/auth/login">Microsoft 로그인</a>
+        <button id="logoutBtn" class="btn ghost" hidden>로그아웃</button>
+      </div>
+    </header>
+
+    <main>
+      <aside id="sidebar">
+        <h2>도구 <span id="toolCount" class="badge">0</span></h2>
+        <input id="toolFilter" placeholder="도구 검색…" />
+        <ul id="toolList"></ul>
+      </aside>
+
+      <section id="chatPane">
+        <div id="loginGate" class="login-gate" hidden>
+          <div class="login-gate-card">
+            <strong>로그인이 필요합니다</strong>
+            <p>Mail MCP를 사용하려면 먼저 Microsoft 계정으로 로그인하세요.</p>
+            <a class="btn" href="/auth/login">Microsoft 로그인</a>
+          </div>
+        </div>
+        <div id="messages" class="messages">
+          <div class="msg system">
+            요청을 입력하면 <strong>Work IQ Mail MCP</strong>를 통해 응답을 받습니다.
+            <br />예: "안 읽은 메일 검색해줘", "○○에게 회의 일정 메일 초안 작성해줘"
+          </div>
+        </div>
+        <form id="chatForm" class="composer">
+          <input id="chatInput" placeholder="요청을 입력하세요…" autocomplete="off" />
+          <button class="btn" type="submit">보내기</button>
+        </form>
+        <p class="hint" id="llmHint"></p>
+      </section>
+    </main>
+
+    <!-- Direct tool invocation modal -->
+    <div id="toolModal" class="modal" hidden>
+      <div class="modal-card">
+        <div class="modal-head">
+          <strong id="toolModalName"></strong>
+          <button id="toolModalClose" class="btn ghost">✕</button>
+        </div>
+        <p id="toolModalDesc" class="sub"></p>
+        <label>arguments (JSON)</label>
+        <textarea id="toolArgs" rows="8">{}</textarea>
+        <button id="toolRun" class="btn">실행</button>
+        <pre id="toolResult" class="result"></pre>
+      </div>
+    </div>
+
+    <script src="/app.js?v=2"></script>
+  </body>
+</html>

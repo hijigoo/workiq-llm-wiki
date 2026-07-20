@@ -68,8 +68,13 @@ cp .env.example .env               # 값 채우기 (아래 + SETUP.md)
 
 ## Entra ID 설정 (빠른 경로)
 
-기본 인증은 **device-code(위임)** 이며, 앱 등록에 **공개 클라이언트 흐름**이 필요합니다.
-아래는 최소 happy-path이고, 포털 방식·권한 ID 조회·문제 해결은 **[SETUP.md](./SETUP.md)** 를 보세요.
+인증 방법은 두 가지이며 **기본은 방법 1(device-code)** 입니다. 노트북 `01`에서 셀 한 줄로 바꿀 수 있고,
+영구 변경은 `.env`의 `AUTH_MODE`로 합니다.
+
+- **방법 1 — device-code(위임, 권장·기본):** 사용자 1회 로그인. 앱 등록에 **공개 클라이언트 흐름**이 필요합니다.
+- **방법 2 — client_credentials(앱 전용):** `CLIENT_SECRET` + 애플리케이션 권한(관리자 동의) 필요. 위임 스코프만 허용된 테넌트에서는 대부분 실패합니다(고급 옵션).
+
+아래는 방법 1 최소 happy-path이고, 포털 방식·권한 ID 조회·문제 해결은 **[SETUP.md](./SETUP.md)** 를 보세요.
 
 ```bash
 az login --tenant <TENANT_ID>
@@ -97,6 +102,15 @@ az ad app permission admin-consent --id "$CLIENT_ID"
 - `.default` 스코프는 **관리자 동의된 위임 권한만** 토큰에 담습니다. 권한을 추가·동의한 뒤에는
   `.token_cache.json`을 지우고 다시 로그인하세요.
 - `client_credentials`(앱 전용)는 고급 옵션이며 대부분의 테넌트에서 동작하지 않습니다(SETUP.md 참고).
+
+**문제 해결 — 로그인은 성공했는데 `AADSTS7000218: ... 'client_assertion' or 'client_secret'` 오류가 뜬다면**
+공개 클라이언트 흐름이 꺼져 있는 것입니다(방법 1). 위 CLI(2번) 또는 포털에서 켜세요:
+
+> **Entra/Azure Portal → App registrations**(앱 등록) → *CLIENT_ID와 일치하는 앱* →
+> **Manage → Authentication → Advanced settings → "Allow public client flows" → Yes → Save**
+>
+> ⚠️ **App registrations**(애플리케이션 개체)에서만 이 옵션이 보입니다. **Enterprise applications**
+> (서비스 주체)에는 Authentication 메뉴가 없습니다.
 
 `.env`의 핵심 항목:
 

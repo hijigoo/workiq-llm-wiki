@@ -64,7 +64,7 @@ def assemble_document(body_markdown: str, meta: dict) -> str:
     return f"{build_front_matter(meta)}\n\n{body_markdown.strip()}\n"
 
 
-async def to_markdown(extract_result: dict, extra_meta: dict | None = None) -> dict:
+async def to_markdown(extract_result: dict, extra_meta: dict | None = None, progress=None) -> dict:
     """Generate a wiki markdown document from an extraction result.
 
     Returns ``{"title", "slug", "markdown", "meta", "body"}``.
@@ -86,6 +86,12 @@ async def to_markdown(extract_result: dict, extra_meta: dict | None = None) -> d
         "=== 수집된 원본 자료 ===\n"
         f"{material}"
     )
+
+    if progress:
+        try:
+            progress("위키 문서 생성 중… (LLM 작성)")
+        except Exception:  # noqa: BLE001
+            pass
 
     completion = await asyncio.to_thread(
         oa["client"].chat.completions.create,

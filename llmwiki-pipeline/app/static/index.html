@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LLM Wiki Pipeline</title>
-    <link rel="stylesheet" href="/styles.css?v=1" />
+    <link rel="stylesheet" href="/styles.css?v=4" />
   </head>
   <body>
     <header>
@@ -16,6 +16,9 @@
       <div class="status-chips">
         <span class="chip" id="llmChip">LLM: …</span>
         <span class="chip" id="authChip">auth: …</span>
+        <span class="chip user-chip" id="userLabel" hidden></span>
+        <button class="chip-btn" id="loginBtn" hidden>로그인</button>
+        <button class="chip-btn" id="logoutBtn" hidden>로그아웃</button>
       </div>
     </header>
 
@@ -41,8 +44,21 @@
           <div id="sourceBar">
             <label class="source-toggle"><input type="checkbox" id="src-mail" checked /> Mail
               <span class="dot" id="dot-mail"></span></label>
+            <a class="connect-link" id="connect-mail" hidden>연결</a>
             <label class="source-toggle"><input type="checkbox" id="src-teams" checked /> Teams
               <span class="dot" id="dot-teams"></span></label>
+            <a class="connect-link" id="connect-teams" hidden>연결</a>
+          </div>
+
+          <div id="toolsPanel" class="tools-panel">
+            <div class="tools-group" id="tools-mail" hidden>
+              <div class="tools-title">Mail 툴 <span class="sub" id="tools-mail-count"></span></div>
+              <ul class="tool-list" id="tool-list-mail"></ul>
+            </div>
+            <div class="tools-group" id="tools-teams" hidden>
+              <div class="tools-title">Teams 툴 <span class="sub" id="tools-teams-count"></span></div>
+              <ul class="tool-list" id="tool-list-teams"></ul>
+            </div>
           </div>
 
           <button class="btn" id="runBtn">추출 실행</button>
@@ -81,6 +97,20 @@
       </section>
     </main>
 
-    <script src="/app.js?v=1"></script>
+    <div id="toolModal" class="modal" hidden>
+      <div class="modal-card wide">
+        <h3 id="toolTitle">툴 호출</h3>
+        <p class="sub" id="toolDesc"></p>
+        <div id="toolForm" class="tool-form"></div>
+        <div class="tool-actions">
+          <button class="btn" id="toolCallBtn">호출</button>
+          <button class="btn btn-secondary" id="toolClose">닫기</button>
+        </div>
+        <p class="sub" id="toolState"></p>
+        <pre id="toolResult" class="log tool-result"></pre>
+      </div>
+    </div>
+
+    <script src="/app.js?v=4"></script>
   </body>
 </html>

@@ -51,8 +51,17 @@ async def run_pipeline(
     end: str | None = None,
     sources=None,
     ensure_login: bool = False,
+    tokens: dict[str, str] | None = None,
+    progress=None,
 ) -> dict:
     """Run extract -> generate and return a draft.
+
+    When ``tokens`` is provided (web app: per-user session tokens), those are
+    used directly and no global/device-code login is attempted. Otherwise tokens
+    are gathered from the shared cache (notebook / CLI use).
+
+    ``progress`` (optional) is a callable that receives short status strings as
+    the run advances; the web app uses it to stream progress to the browser.
 
     Returns ``{"query", "start", "end", "sources", "extract", "doc",
     "token_errors", "source_errors"}``. ``doc`` is None when no LLM/source is
@@ -64,7 +73,18 @@ async def run_pipeline(
         start = start or d_start
         end = end or d_end
 
-    tokens, token_errors = gather_tokens(source_keys, ensure_login=ensure_login)
+    if progress:
+        progress("인증 토큰 확인 중…")
+
+    if tokens is None:
+        tokens, token_errors = gather_tokens(source_keys, ensure_login=ensure_login)
+    else:
+        tokens = {k: v for k, v in tokens.items() if k in source_keys and v}
+        token_errors = {
+            k: "로그인이 필요합니다. 상단의 '로그인'을 눌러 이 소스에 로그인하세요."
+            for k in source_keys
+            if k not in tokens
+        }
 
     if not tokens:
         return {
@@ -78,8 +98,8 @@ async def run_pipeline(
             "source_errors": {},
         }
 
-    extract_result = await extract_knowledge(tokens, query, start=start, end=end)
-    doc = await to_markdown(extract_result)
+    extract_result = await extract_knowledge(tokens, query, start=start, end=end, progress=progress)
+    doc = await to_markdown(extract_result, progress=progress)
 
     return {
         "query": query,

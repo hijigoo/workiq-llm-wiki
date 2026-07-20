@@ -11,10 +11,20 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from typing import Any
 
 from .config import config, llm_provider, SOURCES
 from .mcp_client import content_to_text, tool_input_schema, with_mcps
+
+
+def _emit(progress, message: str) -> None:
+    """Fire a progress callback if one was supplied; never let it break the run."""
+    if progress:
+        try:
+            progress(message)
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def make_openai() -> dict | None:
@@ -28,10 +38,15 @@ def make_openai() -> dict | None:
             azure_deployment=config.llm.azure_deployment,
             api_version=config.llm.azure_api_version,
         )
-        if config.llm.azure_api_key:
-            client = AzureOpenAI(api_key=config.llm.azure_api_key, **common)
+        if config.llm.azure_api_key.strip():
+            client = AzureOpenAI(api_key=config.llm.azure_api_key.strip(), **common)
         else:
             # Keyless: Entra ID (DefaultAzureCredential -> az login / MI).
+            # NOTE: an empty AZURE_OPENAI_API_KEY="" left in the environment
+            # poisons the openai SDK credential check (it treats "" as a set-but-
+            # invalid key and raises "Missing credentials"), so drop it before
+            # building the keyless client.
+            os.environ.pop("AZURE_OPENAI_API_KEY", None)
             from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 
             token_provider = get_bearer_token_provider(
@@ -105,8 +120,13 @@ async def run_agent(
     user_message: str,
     history: list[dict] | None = None,
     max_iters: int = 8,
+    progress=None,
 ) -> dict:
     """Run a tool-calling loop against one or more MCP servers.
+
+    ``progress`` (optional) is a callable that receives short human-readable
+    status strings as the run advances (connect -> list tools -> each tool call
+    -> done); used by the web app to stream progress to the browser.
 
     Returns ``{"answer", "trace", "source_errors"}``.
     """
@@ -123,17 +143,22 @@ async def run_agent(
     async def _run(clients: dict, connect_errors: dict) -> dict:
         source_errors = dict(connect_errors)
         connected = list(clients.keys())
+        if connected:
+            labels = ", ".join(
+                SOURCES[k].label if k in SOURCES else k for k in connected
+            )
+            _emit(progress, f"MCP 연결됨: {labels}. 도구 목록 로딩 중…")
 
         tools_by_source: dict[str, list[Any]] = {}
 
-        async def _list(source_key: str) -> None:
+        # Sequential (same-task) list_tools — see mcp_client.with_mcps for why we
+        # avoid spawning per-source tasks around these MCP sessions.
+        for source_key in connected:
             try:
                 res = await clients[source_key].list_tools()
                 tools_by_source[source_key] = list(res.tools or [])
             except Exception as exc:  # noqa: BLE001
                 source_errors[source_key] = str(exc)
-
-        await asyncio.gather(*(_list(k) for k in connected), return_exceptions=True)
 
         tools, registry = build_toolset(tools_by_source)
         messages: list[dict] = [
@@ -150,7 +175,10 @@ async def run_agent(
                 "source_errors": source_errors,
             }
 
-        for _ in range(max_iters):
+        _emit(progress, f"도구 {len(tools)}개 로드됨. 데이터 수집 시작…")
+
+        for i in range(max_iters):
+            _emit(progress, f"LLM 분석 중… (단계 {i + 1}/{max_iters})")
             completion = await asyncio.to_thread(
                 oa["client"].chat.completions.create,
                 model=oa["model"],
@@ -174,6 +202,7 @@ async def run_agent(
             messages.append(assistant_msg)
 
             if not msg.tool_calls:
+                _emit(progress, "데이터 수집 완료.")
                 return {"answer": msg.content or "(no content)", "trace": trace, "source_errors": source_errors}
 
             for call in msg.tool_calls:
@@ -188,6 +217,8 @@ async def run_agent(
                 else:
                     source_key = entry["source_key"]
                     original_name = entry["original_name"]
+                    src_label = SOURCES[source_key].label if source_key in SOURCES else source_key
+                    _emit(progress, f"🔧 {src_label} · {original_name} 호출 중…")
                     client = clients.get(source_key)
                     if client is None:
                         result_text = f'ERROR: source "{source_key}" is not connected'
@@ -210,10 +241,12 @@ async def run_agent(
                     {"role": "tool", "tool_call_id": call.id, "content": result_text[:8000]}
                 )
 
+        _emit(progress, "도구 호출 한도에 도달했습니다.")
         return {
             "answer": "Reached the tool-call limit without a final answer. See the trace below.",
             "trace": trace,
             "source_errors": source_errors,
         }
 
+    _emit(progress, "MCP 세션 연결 중…")
     return await with_mcps(tokens_by_source, _run)

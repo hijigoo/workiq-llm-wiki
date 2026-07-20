@@ -59,6 +59,7 @@ async def extract_knowledge(
     query: str,
     start: str | None = None,
     end: str | None = None,
+    progress=None,
 ) -> dict:
     """Run the extraction agent and return the gathered material.
 
@@ -73,7 +74,7 @@ async def extract_knowledge(
 
     source_keys = list(tokens_by_source.keys())
     prompt = build_extraction_prompt(query, start, end, source_keys)
-    result = await run_agent(tokens_by_source, prompt)
+    result = await run_agent(tokens_by_source, prompt, progress=progress)
 
     return {
         "query": query,

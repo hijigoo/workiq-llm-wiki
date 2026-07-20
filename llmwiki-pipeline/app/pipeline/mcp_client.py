@@ -7,7 +7,6 @@ token is attached to every HTTP request via the transport headers.
 
 from __future__ import annotations
 
-import asyncio
 from contextlib import AsyncExitStack
 from typing import Any, Awaitable, Callable
 
@@ -40,20 +39,30 @@ async def with_mcps(
     tokens_by_source: dict[str, str],
     fn: Callable[[dict[str, ClientSession], dict[str, str]], Awaitable[Any]],
 ):
-    """Open authenticated MCP sessions for MULTIPLE sources at once, run
+    """Open authenticated MCP sessions for MULTIPLE sources, run
     ``fn(sessions, errors)``, then always close them all. One source failing to
     connect does not block the others — it is reported via the ``errors`` map.
+
+    Sessions are opened AND closed in this single task, on purpose: the MCP
+    transports use ``anyio`` cancel scopes, which must be entered and exited in
+    the same task. Opening them in separate tasks (e.g. via ``asyncio.gather``)
+    while unwinding the shared ``AsyncExitStack`` here raises "Attempted to exit
+    cancel scope in a different task than it was entered in". With only a couple
+    of sources the sequential connect is cheap; the slow part is the LLM loop.
     """
     opened: dict[str, ClientSession] = {}
     errors: dict[str, str] = {}
 
     async with AsyncExitStack() as stack:
-
-        async def _open(source_key: str, token: str) -> None:
-            source = source_or_raise(source_key)
+        for source_key, token in tokens_by_source.items():
+            try:
+                source = source_or_raise(source_key)
+            except Exception as exc:  # noqa: BLE001
+                errors[source_key] = str(exc)
+                continue
             if not token:
                 errors[source_key] = f"Not signed in to {source_key} (no access token)."
-                return
+                continue
             try:
                 read, write, _ = await stack.enter_async_context(
                     streamablehttp_client(
@@ -65,11 +74,6 @@ async def with_mcps(
                 opened[source_key] = session
             except Exception as exc:  # noqa: BLE001 - report per-source, keep going
                 errors[source_key] = str(exc)
-
-        await asyncio.gather(
-            *(_open(k, t) for k, t in tokens_by_source.items()),
-            return_exceptions=True,
-        )
         return await fn(opened, errors)
 
 

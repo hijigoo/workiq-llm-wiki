@@ -33,8 +33,9 @@ header {
 .dot { width: 10px; height: 10px; border-radius: 50%; background: #c8c6c4; display: inline-block; }
 .dot.ok { background: var(--ok); }
 .dot.err { background: var(--err); }
-.status-chips { display: flex; gap: 8px; }
+.status-chips { display: flex; gap: 8px; align-items: center; }
 .chip { background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 3px 10px; font-size: 12px; color: var(--sub); }
+.user-chip { color: var(--accent-d); border-color: var(--accent); font-weight: 600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .btn {
   background: var(--accent);
@@ -49,6 +50,8 @@ header {
 }
 .btn:hover { background: var(--accent-d); }
 .btn:disabled { background: #b7b7d6; cursor: not-allowed; }
+.btn-secondary { background: #ececf3; color: var(--text); }
+.btn-secondary:hover { background: #e0e0ee; }
 
 main { flex: 1; display: flex; min-height: 0; }
 #sidebar {
@@ -75,6 +78,8 @@ textarea, input[type="text"], input[type="date"], input:not([type]) {
 #sourceBar { display: flex; gap: 16px; align-items: center; }
 .source-toggle { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); cursor: pointer; margin: 0; }
 .source-toggle input { width: auto; }
+.connect-link { font-size: 12px; color: var(--accent-d); text-decoration: underline; cursor: pointer; margin-left: -8px; }
+.connect-link:hover { color: var(--accent); }
 
 .hint { margin: 8px 0 0; color: var(--sub); font-size: 12px; min-height: 14px; }
 
@@ -117,3 +122,59 @@ textarea, input[type="text"], input[type="date"], input:not([type]) {
 .log:empty { display: none; }
 .log .ok { color: #6ccf6c; }
 .log .err { color: #ff8a8a; }
+
+/* --- auth buttons + tool explorer + modals --- */
+.chip-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 3px 12px;
+  font-size: 12px;
+  color: var(--text);
+  cursor: pointer;
+}
+.chip-btn:hover { background: #e8e8f5; border-color: var(--accent); color: var(--accent); }
+.chip-btn:disabled { opacity: .55; cursor: not-allowed; }
+
+.tools-panel { margin-top: 6px; }
+.tools-group { margin-top: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 8px; background: #fafafa; }
+.tools-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.tool-list { list-style: none; margin: 0; padding: 0; max-height: 160px; overflow: auto; }
+.tool-list li {
+  padding: 5px 7px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  border: 1px solid transparent; display: flex; flex-direction: column; gap: 1px;
+}
+.tool-list li:hover { background: #eef0fb; border-color: var(--accent); }
+.tool-list li .tname { font-family: ui-monospace, Menlo, Consolas, monospace; color: var(--accent-d); }
+.tool-list li .tdesc { color: var(--sub); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tool-list li.loading, .tool-list li.empty { color: var(--sub); cursor: default; }
+
+.modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center; z-index: 50;
+}
+.modal-card {
+  background: var(--panel); border-radius: 12px; padding: 20px 22px;
+  width: 440px; max-width: 92vw; box-shadow: 0 12px 40px rgba(0,0,0,.28);
+}
+.modal-card.wide { width: 640px; max-height: 88vh; overflow: auto; }
+.modal-card h3 { margin: 0 0 6px; font-size: 16px; }
+.auth-msg { font-size: 13px; line-height: 1.5; word-break: break-word; }
+.auth-state { min-height: 16px; }
+.auth-code-row { display: flex; align-items: center; gap: 8px; margin: 12px 0; }
+.auth-code-row code {
+  font-size: 22px; font-weight: 700; letter-spacing: 2px;
+  background: var(--bg); padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border);
+}
+.modal-card .btn { display: inline-block; text-align: center; text-decoration: none; width: auto; padding: 9px 16px; }
+.modal-card #authClose { margin-top: 12px; }
+
+.tool-form { margin: 10px 0; display: flex; flex-direction: column; gap: 8px; }
+.tool-field label { margin: 0 0 3px; }
+.tool-field label .req { color: var(--err); }
+.tool-field .ftype { color: var(--sub); font-weight: 400; }
+.tool-field textarea { min-height: 52px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.tool-empty { font-size: 12px; color: var(--sub); }
+.tool-actions { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.tool-actions .btn { width: auto; margin-top: 0; }
+.tool-result { max-height: 320px; margin-top: 10px; }

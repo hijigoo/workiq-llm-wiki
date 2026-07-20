@@ -141,6 +141,12 @@ class Config:
     authority: str = ""
     auth_mode: str = "device_code"
     token_cache_path: str = ".token_cache.json"
+    # Interactive browser login (Authorization Code flow). The redirect URI must
+    # be registered as a "Web" platform redirect on the Entra app registration,
+    # and the app must be opened on the SAME host (localhost vs 127.0.0.1) so the
+    # session cookie set on /auth/callback is visible.
+    redirect_uri: str = "http://localhost:8000/auth/callback"
+    session_secret: str = "dev-insecure-session-secret-change-me"
     wiki_dir: str = "app/wiki"
     llm: LLMConfig = field(default_factory=LLMConfig)
 
@@ -152,6 +158,10 @@ config = Config(
     authority=f"https://login.microsoftonline.com/{TENANT_ID}",
     auth_mode=os.environ.get("AUTH_MODE", "device_code").strip() or "device_code",
     token_cache_path=os.environ.get("TOKEN_CACHE_PATH", ".token_cache.json"),
+    redirect_uri=os.environ.get("REDIRECT_URI", "").strip()
+    or "http://localhost:8000/auth/callback",
+    session_secret=os.environ.get("SESSION_SECRET", "").strip()
+    or "dev-insecure-session-secret-change-me",
     wiki_dir=os.environ.get("WIKI_DIR", "app/wiki"),
     llm=LLMConfig(
         azure_endpoint=os.environ.get("AZURE_OPENAI_ENDPOINT", ""),

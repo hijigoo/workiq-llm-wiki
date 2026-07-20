@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LLM Wiki Pipeline</title>
+    <link rel="stylesheet" href="/styles.css?v=1" />
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <span class="dot" id="statusDot"></span>
+        <strong>LLM Wiki Pipeline</strong>
+        <span class="sub" id="subLabel">Teams + Mail → Markdown</span>
+      </div>
+      <div class="status-chips">
+        <span class="chip" id="llmChip">LLM: …</span>
+        <span class="chip" id="authChip">auth: …</span>
+      </div>
+    </header>
+
+    <main>
+      <aside id="sidebar">
+        <section class="card">
+          <h2>1. 추출 요청</h2>
+          <label>무엇을 추출할까요? (자연어)</label>
+          <textarea id="query" rows="4" placeholder="예: 이번 주 Kafka 컨슈머 재처리 관련 논의와 트러블슈팅 노하우"></textarea>
+
+          <div class="row">
+            <div>
+              <label>시작일</label>
+              <input type="date" id="startDate" />
+            </div>
+            <div>
+              <label>종료일</label>
+              <input type="date" id="endDate" />
+            </div>
+          </div>
+
+          <label>소스</label>
+          <div id="sourceBar">
+            <label class="source-toggle"><input type="checkbox" id="src-mail" checked /> Mail
+              <span class="dot" id="dot-mail"></span></label>
+            <label class="source-toggle"><input type="checkbox" id="src-teams" checked /> Teams
+              <span class="dot" id="dot-teams"></span></label>
+          </div>
+
+          <button class="btn" id="runBtn">추출 실행</button>
+          <p class="hint" id="runHint"></p>
+        </section>
+
+        <section class="card">
+          <h2>기존 위키 문서</h2>
+          <ul id="docList" class="doc-list"></ul>
+        </section>
+      </aside>
+
+      <section id="editorPane">
+        <div class="editor-head">
+          <h2>2. 초안 리뷰 &amp; 수정</h2>
+          <span class="sub" id="draftMeta"></span>
+        </div>
+
+        <textarea id="editor" spellcheck="false"
+          placeholder="추출을 실행하면 생성된 Markdown 초안이 여기에 표시됩니다. 자유롭게 수정한 뒤 아래에서 커밋하세요."></textarea>
+
+        <div class="commit-bar">
+          <div class="commit-fields">
+            <div>
+              <label>파일명 (slug)</label>
+              <input id="slug" placeholder="kafka-consumer" />
+            </div>
+            <div class="grow">
+              <label>커밋 메시지</label>
+              <input id="commitMsg" placeholder="docs(wiki): add ..." />
+            </div>
+          </div>
+          <button class="btn" id="commitBtn" disabled>3. 커밋 (wiki/에 저장)</button>
+        </div>
+        <pre id="log" class="log"></pre>
+      </section>
+    </main>
+
+    <script src="/app.js?v=1"></script>
+  </body>
+</html>

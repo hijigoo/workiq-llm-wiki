@@ -15,6 +15,9 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
+# Generated wiki output containing real extracted M365 content (never commit)
+notebook/wiki/
+
 # OS
 .DS_Store
 *.log

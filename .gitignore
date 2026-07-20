@@ -7,3 +7,16 @@ node_modules/
 
 # Secrets / local env
 .env
+.token_cache.json
+*.token_cache.json
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# Stray / scratch (not part of the project; real code is under samples/)
+/teams-mcp-web-sample/

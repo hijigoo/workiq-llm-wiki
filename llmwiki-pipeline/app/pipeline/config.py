@@ -19,23 +19,36 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 # Load .env from the project root (if present).
 load_dotenv(PROJECT_ROOT / ".env")
 
-TENANT_ID = os.environ.get("TENANT_ID", "00000000-0000-0000-0000-000000000000")
+TENANT_ID = os.environ.get("TENANT_ID") or "00000000-0000-0000-0000-000000000000"
 
-MAIL_MCP_SERVER_URL = os.environ.get(
-    "MAIL_MCP_SERVER_URL",
-    f"https://agent365.svc.cloud.microsoft/agents/tenants/{TENANT_ID}/servers/mcp_MailTools",
-)
-TEAMS_MCP_SERVER_URL = os.environ.get(
-    "TEAMS_MCP_SERVER_URL",
-    f"https://agent365.svc.cloud.microsoft/agents/tenants/{TENANT_ID}/servers/mcp_TeamsServer",
-)
+
+def _mcp_url(env_var: str, server_id: str) -> str:
+    """Use the explicit URL if provided, otherwise derive it from TENANT_ID.
+
+    Empty/blank values are treated as "unset" so users who only fill in
+    TENANT_ID (leaving the URL lines blank in .env) still get the correct,
+    tenant-specific endpoint instead of the all-zero placeholder tenant.
+    """
+    explicit = (os.environ.get(env_var) or "").strip()
+    if explicit:
+        return explicit
+    return f"https://agent365.svc.cloud.microsoft/agents/tenants/{TENANT_ID}/servers/{server_id}"
+
+
+MAIL_MCP_SERVER_URL = _mcp_url("MAIL_MCP_SERVER_URL", "mcp_MailTools")
+TEAMS_MCP_SERVER_URL = _mcp_url("TEAMS_MCP_SERVER_URL", "mcp_TeamsServer")
 
 
 @dataclass(frozen=True)
 class Source:
-    """A selectable MCP backend. Mail and Teams are DIFFERENT OAuth resources
-    (each exposes its own ``.default`` scope), so a token acquired for one is
-    never valid for the other — one token is acquired per selected source."""
+    """A selectable MCP backend (Mail or Teams).
+
+    Both servers live behind the SAME Entra resource app ("Agent Tools", audience
+    ``https://agent365.svc.cloud.microsoft``), but each server requires its own
+    delegated scope (``McpServers.Mail.All`` / ``McpServers.Teams.All``). We
+    therefore acquire one token per source using that server's ``.default``
+    scope: a Mail-scoped token is rejected by the Teams server (missing scope)
+    and vice-versa, so tokens are never shared across sources."""
 
     key: str
     label: str

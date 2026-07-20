@@ -47,10 +47,11 @@ function setStatus(s) {
     $("logoutBtn").hidden = true;
   }
 
-  let totalTools = 0;
+  const selected = new Set(selectedSources());
+  let selectedTools = 0;
   SOURCE_KEYS.forEach((k) => {
     const src = s.sources?.[k] || {};
-    totalTools += src.toolCount || 0;
+    if (selected.has(k)) selectedTools += src.toolCount || 0;
     const sdot = $(`dot-${k}`);
     sdot.className = "dot" + (src.connected ? " ok" : signedIn ? " err" : "");
     const connectLink = $(`connect-${k}`);
@@ -62,7 +63,9 @@ function setStatus(s) {
     toggle.classList.toggle("disabled", signedIn && !src.connected);
   });
 
-  $("toolCount").textContent = totalTools;
+  // Badge reflects only the currently CHECKED sources, matching what's
+  // actually visible in the sidebar list below — not every connected source.
+  $("toolCount").textContent = selectedTools;
   $("llmHint").textContent = s.llm
     ? `자연어 에이전트: ${s.llm} 사용 중`
     : "LLM 미설정 — 채팅창은 안내만 표시됩니다. 좌측 도구를 클릭해 직접 실행하세요.";
@@ -125,12 +128,16 @@ async function refreshTools() {
   if (sources.length === 0) {
     allTools = [];
     renderTools(allTools);
+    $("toolCount").textContent = 0;
     return;
   }
   try {
     const { tools, errors } = await api(`/api/tools?sources=${sources.join(",")}`);
     allTools = tools;
     renderTools(tools);
+    // Keep the badge in sync with the checkbox selection, not just the
+    // initial /api/status snapshot (which doesn't re-run on checkbox toggle).
+    $("toolCount").textContent = tools.length;
     Object.entries(errors || {}).forEach(([src, msg]) => addMessage("error", `${src}: ${msg}`));
   } catch (err) {
     addMessage("error", "도구 목록 불러오기 실패: " + err.message);
@@ -149,6 +156,13 @@ SOURCE_KEYS.forEach((k) => {
     }
     saveSelectedSources(selected);
     refreshTools();
+    // If the open direct-tool modal belongs to a source that was just
+    // deselected, close it — otherwise the user could still click "실행"
+    // and call a tool from a source that's supposed to be inactive.
+    if (currentTool && !selected.includes(currentTool.source)) {
+      $("toolModal").hidden = true;
+      currentTool = null;
+    }
   });
 });
 

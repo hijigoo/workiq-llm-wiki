@@ -38,6 +38,18 @@ def _mcp_url(env_var: str, server_id: str) -> str:
 MAIL_MCP_SERVER_URL = _mcp_url("MAIL_MCP_SERVER_URL", "mcp_MailTools")
 TEAMS_MCP_SERVER_URL = _mcp_url("TEAMS_MCP_SERVER_URL", "mcp_TeamsServer")
 
+# Work IQ MCP: a SINGLE endpoint exposing generic, Graph-path-based tools
+# (fetch / search_paths / ask / get_schema / ...) that already span mail, Teams,
+# calendar, files and people. Unlike Mail/Teams (Agent365, one server each), this
+# is one server, so it is offered as its own selectable source. Blank env =>
+# Microsoft's public Work IQ endpoint + delegated scope (see .env.example).
+WORKIQ_MCP_SERVER_URL = (os.environ.get("WORKIQ_MCP_SERVER_URL") or "").strip() or (
+    "https://workiq.svc.cloud.microsoft/mcp"
+)
+WORKIQ_SCOPE = (os.environ.get("WORKIQ_SCOPE") or "").strip() or (
+    "fdcc1f02-fc51-4226-8753-f668596af7f7/WorkIQAgent.Ask"
+)
+
 
 @dataclass(frozen=True)
 class Source:
@@ -71,6 +83,15 @@ Use the available Teams tools to fulfil requests about Teams chats, channels, te
 - IDs in the Teams tools are real Graph IDs. Never invent an ID.
 - For write actions (post message, create/delete chat, add member) do exactly what the user asked; summarise what you did."""
 
+WORKIQ_SYSTEM_PROMPT = """You are connected to the Microsoft "Work IQ" MCP server — a single endpoint exposing GENERIC, Microsoft-Graph-path-based tools instead of source-specific ones.
+Key tools: `search_paths` (discover available Graph paths by filter), `get_schema` (inspect a path's fields/params), `fetch` (GET entities by relative Graph path with OData like $filter/$select/$top), and `ask` (agentic natural-language query over M365 data).
+This source is used for READ-ONLY knowledge extraction, so:
+- Do NOT call any write/mutation tools (create_entity / update_entity / delete_entity / do_action) here.
+- Discover the right path with `search_paths` before calling `fetch` (e.g. filter "messages", ".*chats.*", ".*calendar.*"); never invent a path or an ID.
+- Use server-relative paths only (start with "/me/...", "/users/...", etc. — no scheme or /v1.0 prefix) and URL-encode query values.
+- Prefer date-filtered `fetch` (OData $filter on receivedDateTime / lastModifiedDateTime, etc.) to stay inside the requested range; use `ask` for semantic/summary questions when a literal fetch is impractical.
+- Honor paging (@odata.nextLink) when the request asks for everything."""
+
 
 SOURCES: dict[str, Source] = {
     "mail": Source(
@@ -88,6 +109,20 @@ SOURCES: dict[str, Source] = {
         scopes=[f"{TEAMS_MCP_SERVER_URL}/.default"],
         client_name="llmwiki-pipeline-teams",
         system_prompt=TEAMS_SYSTEM_PROMPT,
+    ),
+    # Work IQ uses an explicit delegated scope (WorkIQAgent.Ask) rather than the
+    # "<url>/.default" pattern above, because the endpoint URL is not the OAuth
+    # resource identifier. The app acquires this token with its OWN client_id
+    # (same as Mail/Teams), so the Entra app registration must have the Work IQ
+    # delegated permission "WorkIQAgent.Ask" granted/consented (analogous to the
+    # Agent Tools scopes). Override WORKIQ_SCOPE in .env if your tenant differs.
+    "workiq": Source(
+        key="workiq",
+        label="Work IQ",
+        mcp_server_url=WORKIQ_MCP_SERVER_URL,
+        scopes=[WORKIQ_SCOPE],
+        client_name="llmwiki-pipeline-workiq",
+        system_prompt=WORKIQ_SYSTEM_PROMPT,
     ),
 }
 

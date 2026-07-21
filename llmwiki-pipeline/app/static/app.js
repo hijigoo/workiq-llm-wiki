@@ -2,9 +2,14 @@
 
 const $ = (id) => document.getElementById(id);
 
+// The selectable MCP sources. Mail/Teams are Agent365 (one server each); Work IQ
+// is a single unified endpoint with generic path-based tools. Keep in sync with
+// the toggles in index.html and SOURCES in pipeline/config.py.
+const SOURCE_KEYS = ["mail", "teams", "workiq"];
+
 // Per-source "connected" (has a valid token) state, so we only (re)load a
 // source's tool list when it first becomes connected.
-const connectedState = { mail: false, teams: false };
+const connectedState = { mail: false, teams: false, workiq: false };
 
 async function api(path, opts) {
   const res = await fetch(path, opts);
@@ -23,10 +28,10 @@ function log(msg, cls) {
 }
 
 function selectedSources() {
-  const s = [];
-  if ($("src-mail").checked) s.push("mail");
-  if ($("src-teams").checked) s.push("teams");
-  return s;
+  return SOURCE_KEYS.filter((key) => {
+    const el = $("src-" + key);
+    return el && el.checked;
+  });
 }
 
 function todayISO(offsetDays = 0) {
@@ -44,7 +49,7 @@ async function refreshStatus() {
     const anyConnected = Object.values(st.sources).some((s) => s.signedIn);
     $("statusDot").className = "dot " + (anyConnected ? "ok" : signedIn ? "err" : "");
 
-    for (const key of ["mail", "teams"]) {
+    for (const key of SOURCE_KEYS) {
       const info = st.sources[key] || {};
       const dot = $("dot-" + key);
       if (dot) dot.className = "dot " + (info.signedIn ? "ok" : signedIn ? "err" : "");
@@ -250,7 +255,7 @@ async function doLogout() {
   $("logoutBtn").disabled = true;
   try {
     await api("/api/logout", { method: "POST" });
-    for (const key of ["mail", "teams"]) {
+    for (const key of SOURCE_KEYS) {
       $("tools-" + key).hidden = true;
       connectedState[key] = false;
     }
@@ -442,7 +447,7 @@ function init() {
   $("logoutBtn").onclick = doLogout;
   $("toolClose").onclick = () => showModal("toolModal", false);
   $("toolCallBtn").onclick = callTool;
-  for (const key of ["mail", "teams"]) {
+  for (const key of SOURCE_KEYS) {
     $("src-" + key).addEventListener("change", () => syncTools(key));
   }
   $("toolModal").addEventListener("click", (e) => {

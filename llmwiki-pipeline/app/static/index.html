@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LLM Wiki Pipeline</title>
-    <link rel="stylesheet" href="/styles.css?v=4" />
+    <link rel="stylesheet" href="/styles.css?v=5" />
   </head>
   <body>
     <header>
       <div class="brand">
         <span class="dot" id="statusDot"></span>
         <strong>LLM Wiki Pipeline</strong>
-        <span class="sub" id="subLabel">Teams + Mail → Markdown</span>
+        <span class="sub" id="subLabel">Teams + Mail + Work IQ → Markdown</span>
       </div>
       <div class="status-chips">
         <span class="chip" id="llmChip">LLM: …</span>
@@ -48,6 +48,9 @@
             <label class="source-toggle"><input type="checkbox" id="src-teams" checked /> Teams
               <span class="dot" id="dot-teams"></span></label>
             <a class="connect-link" id="connect-teams" hidden>연결</a>
+            <label class="source-toggle"><input type="checkbox" id="src-workiq" /> Work IQ
+              <span class="dot" id="dot-workiq"></span></label>
+            <a class="connect-link" id="connect-workiq" hidden>연결</a>
           </div>
 
           <div id="toolsPanel" class="tools-panel">
@@ -58,6 +61,10 @@
             <div class="tools-group" id="tools-teams" hidden>
               <div class="tools-title">Teams 툴 <span class="sub" id="tools-teams-count"></span></div>
               <ul class="tool-list" id="tool-list-teams"></ul>
+            </div>
+            <div class="tools-group" id="tools-workiq" hidden>
+              <div class="tools-title">Work IQ 툴 <span class="sub" id="tools-workiq-count"></span></div>
+              <ul class="tool-list" id="tool-list-workiq"></ul>
             </div>
           </div>
 
@@ -111,6 +118,6 @@
       </div>
     </div>
 
-    <script src="/app.js?v=4"></script>
+    <script src="/app.js?v=5"></script>
   </body>
 </html>

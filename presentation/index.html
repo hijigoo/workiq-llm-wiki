@@ -255,48 +255,92 @@
     <tbody>
       <tr><td><strong>웹앱</strong> <code>app/</code> (FastAPI)</td><td>Agent365 (+ Work IQ)</td><td>Authorization Code (+ PKCE / secret)</td><td><span class="chk">✔</span> <code>app/pipeline</code></td></tr>
       <tr><td><strong>노트북 01–04</strong></td><td>Agent365 (Mail·Teams 개별)</td><td>device-code (공개 클라이언트)</td><td>독립 실행</td></tr>
-      <tr><td><strong>노트북 05–06</strong></td><td>Work IQ (단일 엔드포인트)</td><td>MS 공개 Work IQ 클라이언트</td><td>독립 실행</td></tr>
+      <tr><td><strong>노트북 05–06</strong></td><td>Work IQ (단일 엔드포인트)</td><td>device-code (자체 앱, 기본) · 옵션 MS 공개</td><td>독립 실행</td></tr>
     </tbody>
   </table>
   <div class="callout info"><span class="lbl">스코프 정직하게</span>
     현재 <strong>실제 추출 소스는 Mail·Teams</strong>. Confluence·Jira·Azure Monitor·GitHub는 <strong>지향하는 문제 영역(비전)</strong>이며 아직 연동 대상이 아니다.</div>
 
-  <h3>초기 구상 스케치 <span class="muted" style="font-size:15px;font-weight:400">— 손그림을 다이어그램으로</span></h3>
-  <svg class="seq" viewBox="0 0 900 200" role="img" aria-label="초기 구상 아키텍처 흐름">
-    <defs><marker id="ah3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4f46e5"/></marker></defs>
-    <rect x="12" y="58" width="158" height="84" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="91" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#1e2233">여러 소스</text>
-    <text x="91" y="108" text-anchor="middle" font-size="12.5" fill="#5b6478">Email · Teams</text>
-    <text x="91" y="126" text-anchor="middle" font-size="12.5" fill="#5b6478">Confluence · Jira · GitHub</text>
-    <line x1="170" y1="100" x2="198" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
-    <rect x="200" y="58" width="176" height="84" rx="10" fill="#eef2ff" stroke="#6366f1"/>
-    <text x="288" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">Azure Function</text>
-    <text x="288" y="108" text-anchor="middle" font-size="12.5" fill="#5b6478">Fetch · LLM 정제</text>
-    <text x="288" y="126" text-anchor="middle" font-size="12.5" fill="#5b6478">Wiki 링크 생성</text>
-    <line x1="376" y1="100" x2="404" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
-    <rect x="406" y="58" width="140" height="84" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="476" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#1e2233">Queue · Blob</text>
-    <text x="476" y="108" text-anchor="middle" font-size="12.5" fill="#5b6478">비동기 처리</text>
-    <text x="476" y="126" text-anchor="middle" font-size="12.5" fill="#5b6478">원본 보관</text>
-    <line x1="546" y1="100" x2="574" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
-    <rect x="588" y="18" width="126" height="28" rx="14" fill="#fff7ed" stroke="#f59e0b"/>
-    <text x="651" y="37" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">사람 리뷰·커밋</text>
-    <line x1="651" y1="46" x2="651" y2="57" stroke="#f59e0b" stroke-width="1.5"/>
-    <rect x="576" y="58" width="150" height="84" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
-    <text x="651" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#166534">GitHub KB Repo</text>
-    <text x="651" y="114" text-anchor="middle" font-size="12.5" fill="#4d7c53">커밋되는 위키</text>
-    <line x1="726" y1="100" x2="754" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
-    <rect x="756" y="58" width="138" height="84" rx="10" fill="#ecfeff" stroke="#06b6d4"/>
-    <text x="825" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#0e7490">Container App</text>
-    <text x="825" y="114" text-anchor="middle" font-size="12.5" fill="#5b6478">대시보드 UI</text>
+  <h3>초기 구상 스케치 <span class="muted" style="font-size:15px;font-weight:400">— 손그림을 구조도로</span></h3>
+  <svg class="seq" viewBox="0 0 1000 560" role="img" aria-label="초기 구상 아키텍처 스케치">
+    <defs>
+      <marker id="ai" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4f46e5"/></marker>
+      <marker id="ag" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#16a34a"/></marker>
+      <marker id="acy" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0891b2"/></marker>
+    </defs>
+
+    <!-- Azure Container App: dashboard -->
+    <rect x="600" y="16" width="300" height="66" rx="12" fill="#ecfeff" stroke="#06b6d4" stroke-width="1.5"/>
+    <text x="750" y="43" text-anchor="middle" font-size="13" fill="#0e7490">Azure Container App</text>
+    <text x="750" y="66" text-anchor="middle" font-size="17" font-weight="700" fill="#0e7490">LLM Wiki 대시보드</text>
+
+    <!-- Sources -->
+    <rect x="20" y="150" width="196" height="300" rx="12" fill="#fff" stroke="#c7cbe0" stroke-width="1.5"/>
+    <text x="118" y="181" text-anchor="middle" font-size="16" font-weight="700" fill="#1e2233">원천 소스</text>
+    <rect x="36" y="196" width="164" height="34" rx="8" fill="#f7f8fc" stroke="#dfe2ef"/><text x="118" y="218" text-anchor="middle" font-size="13.5" fill="#3b4256">GitHub PR</text>
+    <rect x="36" y="236" width="164" height="34" rx="8" fill="#f7f8fc" stroke="#dfe2ef"/><text x="118" y="258" text-anchor="middle" font-size="13.5" fill="#3b4256">Teams</text>
+    <rect x="36" y="276" width="164" height="34" rx="8" fill="#f7f8fc" stroke="#dfe2ef"/><text x="118" y="298" text-anchor="middle" font-size="13.5" fill="#3b4256">Confluence</text>
+    <rect x="36" y="316" width="164" height="34" rx="8" fill="#f7f8fc" stroke="#dfe2ef"/><text x="118" y="338" text-anchor="middle" font-size="13.5" fill="#3b4256">Jira</text>
+    <rect x="36" y="356" width="164" height="34" rx="8" fill="#f7f8fc" stroke="#dfe2ef"/><text x="118" y="378" text-anchor="middle" font-size="13.5" fill="#3b4256">Email</text>
+    <rect x="36" y="396" width="164" height="34" rx="8" fill="#f7f8fc" stroke="#dfe2ef"/><text x="118" y="418" text-anchor="middle" font-size="13.5" fill="#3b4256">Azure Monitor</text>
+
+    <!-- collection arrow -->
+    <text x="258" y="235" text-anchor="middle" font-size="13" font-weight="600" fill="#3730a3">웹훅 · 일배치</text>
+    <line x1="216" y1="250" x2="298" y2="250" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#ai)"/>
+
+    <!-- Azure Function -->
+    <rect x="300" y="168" width="440" height="176" rx="12" fill="#eef2ff" stroke="#6366f1" stroke-width="1.5"/>
+    <text x="520" y="196" text-anchor="middle" font-size="15.5" font-weight="700" fill="#3730a3">Azure Function (or Durable)</text>
+    <g font-size="13" font-weight="600" fill="#1e2233">
+      <rect x="312" y="216" width="92" height="72" rx="9" fill="#fff" stroke="#c7cbe0"/><text x="358" y="248" text-anchor="middle">수집</text><text x="358" y="268" text-anchor="middle" font-size="11.5" font-weight="400" fill="#5b6478">Fetch</text>
+      <line x1="404" y1="252" x2="418" y2="252" stroke="#4f46e5" stroke-width="1.6" marker-end="url(#ai)"/>
+      <rect x="420" y="216" width="92" height="72" rx="9" fill="#fff" stroke="#c7cbe0"/><text x="466" y="256" text-anchor="middle">전처리</text>
+      <line x1="512" y1="252" x2="526" y2="252" stroke="#4f46e5" stroke-width="1.6" marker-end="url(#ai)"/>
+      <rect x="528" y="216" width="92" height="72" rx="9" fill="#fff" stroke="#c7cbe0"/><text x="574" y="248" text-anchor="middle">LLM</text><text x="574" y="268" text-anchor="middle">강화</text>
+      <line x1="620" y1="252" x2="634" y2="252" stroke="#4f46e5" stroke-width="1.6" marker-end="url(#ai)"/>
+      <rect x="636" y="216" width="92" height="72" rx="9" fill="#fff" stroke="#c7cbe0"/><text x="682" y="248" text-anchor="middle">Wikilink</text><text x="682" y="268" text-anchor="middle">MD 생성</text>
+    </g>
+    <text x="520" y="330" text-anchor="middle" font-size="12" fill="#6b6f86">LLM Wiki = Obsidian 기반 Markdown</text>
+
+    <!-- HIL -->
+    <line x1="740" y1="252" x2="766" y2="252" stroke="#f59e0b" stroke-width="1.8" marker-end="url(#ai)"/>
+    <rect x="768" y="216" width="118" height="72" rx="12" fill="#fff7ed" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="827" y="248" text-anchor="middle" font-size="14.5" font-weight="700" fill="#b45309">사람 검토</text>
+    <text x="827" y="270" text-anchor="middle" font-size="12" fill="#b45309">HIL</text>
+
+    <!-- (1) GitHub KB Repo -->
+    <text x="846" y="356" font-size="15" font-weight="800" fill="#16a34a">①</text>
+    <line x1="827" y1="288" x2="827" y2="398" stroke="#16a34a" stroke-width="1.8" marker-end="url(#ag)"/>
+    <rect x="735" y="400" width="180" height="66" rx="12" fill="#f0fdf4" stroke="#22c55e" stroke-width="1.5"/>
+    <text x="825" y="430" text-anchor="middle" font-size="15.5" font-weight="700" fill="#166534">GitHub KB Repo</text>
+    <text x="825" y="450" text-anchor="middle" font-size="12" fill="#4d7c53">커밋되는 위키 관리</text>
+
+    <!-- (2) Queue -> Blob -->
+    <text x="398" y="372" font-size="15" font-weight="800" fill="#4f46e5">②</text>
+    <line x1="420" y1="344" x2="420" y2="394" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#ai)"/>
+    <rect x="340" y="396" width="160" height="56" rx="10" fill="#fff" stroke="#c7cbe0" stroke-width="1.5"/>
+    <text x="420" y="430" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1e2233">Azure Queue</text>
+    <line x1="420" y1="452" x2="420" y2="480" stroke="#4f46e5" stroke-width="1.8" marker-end="url(#ai)"/>
+    <rect x="340" y="482" width="160" height="56" rx="10" fill="#fff" stroke="#c7cbe0" stroke-width="1.5"/>
+    <text x="420" y="516" text-anchor="middle" font-size="14.5" font-weight="700" fill="#1e2233">Blob</text>
+
+    <!-- dashboard read-back -->
+    <line x1="900" y1="400" x2="900" y2="84" stroke="#0891b2" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#acy)"/>
+    <text transform="rotate(-90 936 244)" x="936" y="244" text-anchor="middle" font-size="12" fill="#0e7490">대시보드가 조회·열람</text>
   </svg>
-  <div class="figcap">여러 소스 → Azure Function → Queue·Blob → GitHub KB Repo(사람 리뷰·커밋) → Container App 대시보드</div>
-  <div class="grid g2" style="margin-top:16px">
-    <div class="card soft"><h4><span class="pill g">현재</span> 되어 있는 것</h4>
-      <p class="small">Mail·Teams 추출 → 위키 초안 → 사람이 리뷰·커밋 (로컬 실행).</p></div>
-    <div class="card soft"><h4><span class="pill o">향후</span> 지향</h4>
-      <p class="small">Function·Queue·Blob·Container App 클라우드 배포 (탭 6 참고).</p></div>
+  <div class="figcap">원천 소스 → <strong>웹훅·일배치 수집</strong> → Azure Function(<strong>전처리 · LLM 강화 · Wikilink MD</strong>) → <strong>사람 검토(HIL)</strong> → <strong>①</strong> GitHub KB Repo <em>또는</em> <strong>②</strong> Azure Queue→Blob. Container App 대시보드가 이를 조회.</div>
+
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card soft"><h4>📥 수집</h4>
+      <p class="small"><strong>웹훅·일배치</strong>로 원천 소스에서 자동 수집. <strong>API 연동이 지연되면</strong> 수작업으로 모아 위키화도 가능.</p></div>
+    <div class="card soft"><h4>🛠 가공</h4>
+      <p class="small">전처리 → <strong>LLM 강화</strong> → <strong>Wikilink 기반 MD 생성</strong>(Azure Function). LLM Wiki는 <strong>Obsidian 기반</strong>.</p></div>
+    <div class="card soft"><h4>🗂 운영·저장 <span class="muted" style="font-weight:400">(택1)</span></h4>
+      <p class="small"><strong>①</strong> GitHub KB Repo로 관리 &nbsp;·&nbsp; <strong>②</strong> Azure Queue → Blob으로 운영.</p></div>
+    <div class="card soft"><h4>🕸 소스코드</h4>
+      <p class="small">코드 <strong>그래프화(Grapify)</strong> → 의존성 · <strong>변경 영향도</strong> · 코드 분석에 활용.</p></div>
   </div>
+
 </section>
 
 <!-- ============ TAB 2 : 접근 방법 ============ -->

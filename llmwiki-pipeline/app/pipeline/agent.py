@@ -27,6 +27,66 @@ def _emit(progress, message: str) -> None:
             pass
 
 
+def _short(value: Any, limit: int = 80) -> str:
+    """Compact single-line preview of an argument/value for progress logs."""
+    if isinstance(value, (dict, list)):
+        try:
+            s = json.dumps(value, ensure_ascii=False)
+        except Exception:  # noqa: BLE001
+            s = str(value)
+    else:
+        s = str(value)
+    s = " ".join(s.split())
+    return s if len(s) <= limit else s[: limit - 1] + "…"
+
+
+def _arg_hint(args: dict) -> str:
+    """Pick the most meaningful argument(s) so the log shows WHICH path/query a
+    tool call actually used (e.g. search_paths filter, fetch entityUrls)."""
+    if not isinstance(args, dict) or not args:
+        return ""
+    for key in (
+        "filter", "functionUrl", "actionUrl", "parentUrl", "entityUrl",
+        "path", "query", "question",
+    ):
+        val = args.get(key)
+        if val:
+            return f"{key}={_short(val)}"
+    urls = args.get("entityUrls")
+    if urls:
+        if isinstance(urls, list):
+            shown = ", ".join(_short(u, 60) for u in urls[:3])
+            return "entityUrls=" + shown + (" …" if len(urls) > 3 else "")
+        return f"entityUrls={_short(urls)}"
+    parts = [f"{k}={_short(v, 40)}" for k, v in list(args.items())[:3]]
+    return ", ".join(parts)
+
+
+def _result_hint(text: str) -> str:
+    """Summarise which paths / how many results came back (Work IQ search_paths
+    returns ``{"paths": [...]}``, fetch returns ``{"results": [...]}``)."""
+    if not text or text.startswith("ERROR"):
+        return ""
+    try:
+        data = json.loads(text)
+    except Exception:  # noqa: BLE001
+        return ""
+    if not isinstance(data, dict):
+        return ""
+    paths = data.get("paths")
+    if isinstance(paths, list):
+        names = [p.get("path") for p in paths if isinstance(p, dict) and p.get("path")]
+        if not names:
+            return "경로 0개"
+        shown = ", ".join(names[:8])
+        more = f" 외 {len(names) - 8}개" if len(names) > 8 else ""
+        return f"경로 {len(names)}개: {shown}{more}"
+    results = data.get("results")
+    if isinstance(results, list):
+        return f"결과 {len(results)}개"
+    return ""
+
+
 def make_openai() -> dict | None:
     """Return ``{"client", "model"}`` for the configured provider, or None."""
     provider = llm_provider()
@@ -218,7 +278,9 @@ async def run_agent(
                     source_key = entry["source_key"]
                     original_name = entry["original_name"]
                     src_label = SOURCES[source_key].label if source_key in SOURCES else source_key
-                    _emit(progress, f"🔧 {src_label} · {original_name} 호출 중…")
+                    hint = _arg_hint(args)
+                    suffix = f" ({hint})" if hint else ""
+                    _emit(progress, f"🔧 {src_label} · {original_name} 호출 중…{suffix}")
                     client = clients.get(source_key)
                     if client is None:
                         result_text = f'ERROR: source "{source_key}" is not connected'
@@ -226,6 +288,9 @@ async def run_agent(
                         try:
                             result = await client.call_tool(original_name, arguments=args)
                             result_text = content_to_text(result)
+                            rhint = _result_hint(result_text)
+                            if rhint:
+                                _emit(progress, f"   ↳ {rhint}")
                         except Exception as exc:  # noqa: BLE001
                             result_text = f"ERROR calling {original_name}: {exc}"
 

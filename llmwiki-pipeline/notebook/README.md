@@ -1,15 +1,21 @@
 # LLM Wiki 파이프라인 노트북 가이드
 
-Microsoft 365 **Work IQ MCP**(Agent365)에 연결해 메일·Teams 데이터를 다루고, 최종적으로 LLM으로 사내 기술 위키(Markdown)를 자동 생성하는 4단계 노트북입니다. `pipeline/*.py`나 웹앱 없이 **노트북만으로 독립 실행**되도록 구성되어 있습니다.
+Microsoft 365 **Work IQ MCP**(Agent365)에 연결해 메일·Teams 데이터를 다루고, 최종적으로 LLM으로 사내 기술 위키(Markdown)를 자동 생성하는 노트북 모음입니다. `pipeline/*.py`나 웹앱 없이 **노트북만으로 독립 실행**되도록 구성되어 있습니다.
 
-| 노트북 | 목적 | 핵심 결과물 |
-|--------|------|-------------|
-| `01_setup_mcp.ipynb` | MCP 연결·인증·툴 목록 확인 | `.token_cache.json` (로그인 캐시) |
-| `02_seed_sample_data.ipynb` | 샘플 기술/노하우 데이터 주입 | 메일 2건 + Teams 2건 (본인에게) |
-| `03_fetch_data.ipynb` | MCP 도구 **직접 호출**로 데이터 조회 | 주입 데이터 되읽기 확인 |
-| `04_nl_aggregate_to_md.ipynb` | 자연어 취합 → 위키 Markdown 생성 | `notebook/wiki/*.md` |
+노트북은 **커넥터(연결 방식)** 두 가지를 다룹니다.
+- **01~04 · Agent365 MCP** — 메일/Teams가 **각각의 MCP 서버**로 분리되어 있고, 서버마다 `SearchMessages` 같은 **소스별 전용 도구**를 노출합니다.
+- **05~06 · Work IQ MCP** — **단일 엔드포인트**(`https://workiq.svc.cloud.microsoft/mcp`)가 `fetch`/`ask`/`search_paths` 등 **범용 10개 도구**(Graph 경로 기반)를 노출합니다. 01~04를 Work IQ로 다시 구현한 것으로, 흐름은 03/04와 동일합니다.
 
-권장 실행 순서는 **01 → 02 → 03 → 04**입니다. 01에서 한 번 로그인하면 이후 노트북은 `.token_cache.json`을 재사용하므로 다시 로그인하지 않습니다.
+| 노트북 | 커넥터 | 목적 | 핵심 결과물 |
+|--------|--------|------|-------------|
+| `01_setup_mcp.ipynb` | Agent365 | MCP 연결·인증·툴 목록 확인 | `.token_cache.json` (로그인 캐시) |
+| `02_seed_sample_data.ipynb` | Agent365 | 샘플 기술/노하우 데이터 주입 | 메일 2건 + Teams 2건 (본인에게) |
+| `03_fetch_data.ipynb` | Agent365 | MCP 도구 **직접 호출**로 데이터 조회 | 주입 데이터 되읽기 확인 |
+| `04_nl_aggregate_to_md.ipynb` | Agent365 | 자연어 취합 → 위키 Markdown 생성 | `notebook/wiki/*.md` |
+| `05_workiq_fetch_data.ipynb` | **Work IQ** | Work IQ 범용 도구 **직접 호출**로 데이터 조회 | 주입 데이터 되읽기 확인 |
+| `06_workiq_aggregate_to_md.ipynb` | **Work IQ** | Work IQ 취합 → 위키 Markdown 생성 | `notebook/wiki/*.md` |
+
+권장 실행 순서는 **01 → 02 → 03 → 04**이며, Work IQ 버전을 보려면 **02(샘플 주입) 이후 05 → 06**을 실행합니다. 01~04는 `.token_cache.json`을, 05~06은 별도의 `.workiq.token_cache.json`을 재사용합니다(커넥터가 달라 로그인이 각각 1회 필요).
 
 ---
 
@@ -270,14 +276,43 @@ sequenceDiagram
 
 ---
 
+## 05 · Work IQ MCP 로 데이터 가져오기
+
+**흐름**: 03과 동일하지만 커넥터가 **Work IQ MCP**(단일 엔드포인트, 범용 도구)입니다. 토큰 확보 → `list_tools`로 10개 범용 도구 확인 → `search_paths`로 사용 가능한 Graph 경로 탐색 → `fetch`로 경로를 **직접 읽기**(`/me/messages`, `/me/chats/{id}/messages`) → `ask`로 **자연어 조회**(02 샘플 되읽기).
+
+- **핵심 차이(03 대비)**: 도구가 소스별 전용 이름(`SearchMessages`)이 아니라 **경로 기반 범용 도구**입니다. `fetch`는 원시 Graph 조회(의미검색 아님), `ask`는 M365 Copilot 의미검색/추론입니다. `/me/chats`는 채팅 **목록**이라 메시지는 `/me/chats/{id}/messages`로 한 단계 더 들어갑니다(컬렉션 기본 $top=25·최대 100, 채팅 메시지 최대 10).
+- **인증**: Microsoft 공개 Work IQ 클라이언트를 기본값으로 써 **별도 앱 등록이 필요 없습니다**. 기본 `interactive`(로컬 브라우저·루프백), 원격/헤드리스는 `WORKIQ_AUTH_MODE=device_code`. **회사·학교 계정 + 관리자 동의 + EULA**가 필요합니다(개인 계정 불가). 로그인은 `.workiq.token_cache.json`에 캐시됩니다.
+
+## 06 · Work IQ MCP 로 취합 → 위키 Markdown 생성
+
+**흐름**: 04와 동일(**extract → generate → save/commit**)하며 소스만 Work IQ입니다. 추출은 두 방식을 제공합니다.
+
+- **기본 `extract_via_ask`** — Work IQ `ask`(M365 Copilot)가 메일·Teams를 가로질러 주제·기간에 맞는 지식을 취합합니다(간단·안정, 응답에 수십 초 소요 가능).
+- **선택 `extract_via_agent`** — 04식 에이전트 루프. LLM이 Work IQ 도구를 직접 호출합니다. **안전상 읽기 전용 도구만**(`ask`/`fetch`/`search_paths`/`get_schema`/`list_agents`/`call_function`) 노출하며 쓰기 도구(create/update/delete/do_action)는 제외합니다(메일 본문의 프롬프트 인젝션 방지).
+
+생성/저장은 04와 동일한 `to_markdown`/`save_doc`/`save_and_commit`을 재사용하고, front matter에 `connector: "Work IQ MCP"`를 기록합니다. 출력은 `notebook/wiki/`에 저장됩니다.
+
+```mermaid
+flowchart LR
+    B["02 · 샘플 주입"] -->|"메일·Teams에 적재"| E5["05 · Work IQ 직접 조회"]
+    B -->|"동일 샘플을 소스로"| E6["06 · Work IQ 취합→위키"]
+    E5 -.->|"fetch / ask (읽기 전용)"| WIQ[("Work IQ MCP\n(단일 엔드포인트)")]
+    E6 -.->|"ask / 에이전트 루프"| WIQ
+    E6 -->|"저장/커밋"| MD[("notebook/wiki/*.md")]
+```
+
+---
+
 ## 폴더 구조
 
 ```
 notebook/
-├── README.md                      # 이 문서
-├── 01_setup_mcp.ipynb             # 연결·인증·툴 목록
-├── 02_seed_sample_data.ipynb      # 샘플 데이터 주입
-├── 03_fetch_data.ipynb            # MCP 직접 호출 조회
-├── 04_nl_aggregate_to_md.ipynb    # 자연어 취합 → 위키 생성
-└── wiki/                          # 04가 생성한 Markdown 저장 위치
+├── README.md                          # 이 문서
+├── 01_setup_mcp.ipynb                 # (Agent365) 연결·인증·툴 목록
+├── 02_seed_sample_data.ipynb          # (Agent365) 샘플 데이터 주입
+├── 03_fetch_data.ipynb                # (Agent365) MCP 직접 호출 조회
+├── 04_nl_aggregate_to_md.ipynb        # (Agent365) 자연어 취합 → 위키 생성
+├── 05_workiq_fetch_data.ipynb         # (Work IQ) 범용 도구 직접 호출 조회
+├── 06_workiq_aggregate_to_md.ipynb    # (Work IQ) 취합 → 위키 생성
+└── wiki/                              # 04/06이 생성한 Markdown 저장 위치
 ```

@@ -33,6 +33,10 @@
 - 테넌트에 Work IQ MCP가 **프로비저닝**되어 있어야 합니다. `az ad sp` 조회(3-A)에서 Agent Tools
   서비스 주체가 **없거나** 스코프가 없으면, 이는 ID를 추측해 해결할 문제가 아니라 **테넌트
   프로비저닝/가용성 문제**입니다 — 관리자/담당자에게 확인하세요.
+  - **Agent Tools 서비스 주체(엔터프라이즈 앱)가 이 테넌트에 아직 없다면**, 리소스 앱 자체는
+    Microsoft 소유 멀티테넌트 first-party 앱(appId `ea9ffc3e-8a23-4a7d-836d-234d7c7565c1`,
+    소유 org `f8cdef31-…`)이므로 **appId만 알면 내 테넌트에 SP를 명시적으로 등록**할 수 있습니다.
+    아래 **3-B0**의 `az ad sp create --id ea9ffc3e-…` 참고. (권한 부여·동의는 SP가 있어야 가능)
 - 로그인 계정에 **Exchange Online 사서함**(Mail)과 **Teams 접근**(Teams: 팀/채팅 멤버십)이 있어야
   실제 데이터가 조회됩니다.
 - **관리자 동의** 권한: 일반적으로 Cloud Administrator 또는 Application Administrator면 이 위임
@@ -87,10 +91,32 @@ az ad app show  --id "$CLIENT_ID" --query isFallbackPublicClient -o tsv   # → 
 - device-code에는 **redirect URI, client secret, implicit-grant 체크박스, Web 플랫폼 설정이
   필요 없습니다.** (`--is-fallback-public-client true`가 첫 번째 선택지이며, 일반 `--set`보다 명확)
 
+### 3-B0. (필요 시) Agent Tools 서비스 주체를 테넌트에 등록
+
+`az ad sp show`(3-B)에서 Agent Tools가 **조회되지 않으면**, 리소스 앱의 SP(엔터프라이즈 앱)가
+아직 이 테넌트에 없다는 뜻입니다. Agent Tools는 Microsoft 소유 **멀티테넌트 first-party 앱**이라
+소비 테넌트에서는 **appId만으로 SP를 직접 생성**할 수 있습니다 (앱 등록을 새로 만드는 게 아니라,
+기존 리소스 앱을 내 테넌트의 "엔터프라이즈 애플리케이션"으로 인스턴스화하는 것):
+
+```bash
+# Agent Tools(ea9ffc3e-…) 서비스 주체를 현재 테넌트에 생성/등록
+az ad sp create --id ea9ffc3e-8a23-4a7d-836d-234d7c7565c1
+
+# 생성 확인 (displayName == 'Agent Tools')
+az ad sp show --id ea9ffc3e-8a23-4a7d-836d-234d7c7565c1 \
+  --query "{name:displayName, appId:appId, spId:id}" -o table
+```
+
+> - 이 단계는 **테넌트당 1회**면 됩니다. SP가 생겨야 이후 3-C의 위임 권한 부여/관리자 동의가
+>   해당 리소스에 붙습니다.
+> - `Cloud Application Administrator` 또는 `Application Administrator` 권한이 필요합니다.
+> - **App registrations(앱 등록)** = 앱 정의, **Enterprise applications(엔터프라이즈 앱)** =
+>   서비스 주체(SP). `az ad sp create`가 후자를 만드는 명령입니다.
+
 ### 3-B. Agent Tools 서비스 주체와 Mail 권한 ID 조회
 
 ```bash
-# Agent Tools 서비스 주체 확인 (없으면 테넌트 프로비저닝 문제 — 1번 참고)
+# Agent Tools 서비스 주체 확인 (없으면 테넌트 프로비저닝 문제 — 1번 / 3-B0 참고)
 az ad sp show --id ea9ffc3e-8a23-4a7d-836d-234d7c7565c1 \
   --query "{name:displayName, appId:appId}" -o table
 
@@ -196,7 +222,7 @@ rm -f .token_cache.json
 | 툴은 뜨는데 데이터가 비어 있음 | 계정에 사서함/Teams 멤버십/데이터가 없거나 날짜 범위 밖. 계정·범위 확인. |
 | 모든 요청이 all-zero 테넌트로 감 | `.env`의 `TENANT_ID` 미설정 또는 URL을 옛 placeholder로 하드코딩. URL은 **비워서** 자동 파생시키세요. |
 | device-code가 정책에 막힘 | Conditional Access. 관리자와 협의(4번). |
-| `az ad sp show ea9ffc3e-...` 결과 없음 | 테넌트에 Agent Tools 미프로비저닝(1번) — ID 추측 금지. |
+| `az ad sp show ea9ffc3e-...` 결과 없음 | 테넌트에 Agent Tools SP 미등록. **3-B0**의 `az ad sp create --id ea9ffc3e-…`로 등록(테넌트당 1회) → 3-C 진행. 그래도 스코프가 없으면 테넌트 프로비저닝/가용성 문제(1번) — ID 추측 금지. |
 | `llm: null` (초안 생성 안 됨) | LLM 미설정. `.env`에 OpenAI 키 또는 Azure 엔드포인트+배포(+역할) 설정. |
 
 ---

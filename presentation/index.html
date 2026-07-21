@@ -193,7 +193,7 @@
     <button class="tab-btn" data-tab="arch"><span class="n">6</span>아키텍처</button>
     <button class="tab-btn" data-tab="notebook"><span class="n">7</span>Notebook</button>
     <button class="tab-btn" data-tab="demo"><span class="n">8</span>데모</button>
-    <button class="tab-btn" data-tab="closing"><span class="n">9</span>마무리 &amp; 한계</button>
+    <button class="tab-btn" data-tab="closing"><span class="n">9</span>마무리</button>
     <button class="tab-btn" data-tab="appendix"><span class="n">＋</span>부록</button>
   </nav>
 </header>
@@ -805,30 +805,19 @@ query: "팀즈와 메일 기술 내용 모두"   generator: "llmwiki-pipeline"
   </table>
 </section>
 
-<!-- ============ TAB 9 : 마무리 & 한계 ============ -->
+<!-- ============ TAB 9 : 마무리 ============ -->
 <section class="tab-panel" id="closing">
   <div class="eyebrow">09 · Wrap-up</div>
-  <h2 class="title">마무리 &amp; 한계</h2>
-  <p class="lead">흩어진 대화형 지식을 <strong>자연어 한 줄</strong>로 검토 가능한 위키로. 다만 <strong>정직한 한계</strong>와 <strong>남은 과제</strong>를 함께 본다.</p>
+  <h2 class="title">마무리</h2>
+  <p class="lead">흩어진 대화형 지식을 <strong>자연어 한 줄</strong>로 검토 가능한 위키로. <strong>요약</strong>과 <strong>남은 과제</strong>를 함께 본다.</p>
 
-  <div class="grid g2">
-    <div class="card">
-      <h4><span class="num">✓</span>요약</h4>
-      <ul class="small">
-        <li>Work IQ MCP(Teams·Mail) → LLM 추출·요약 → <strong>리뷰 가능한 Markdown 위키</strong></li>
-        <li>두 커넥터(Agent365 / Work IQ) · 두 표면(웹앱 <code>app/pipeline</code> / 노트북 독립 재구현)</li>
-        <li>Human-in-the-loop · 토큰·스코프 격리 · 신원 분리</li>
-      </ul>
-    </div>
-    <div class="card">
-      <h4><span class="num">!</span>한계</h4>
-      <ul class="small">
-        <li><strong>로컬·단일 사용자</strong> 전용(loopback 밖 노출 금지)</li>
-        <li>Mail·Teams만 실제 소스 — 나머지는 비전</li>
-        <li>LLM 컨텍스트는 소스 데이터가 합쳐짐(<strong>데이터 격리 아님</strong>)</li>
-        <li>출력 신뢰도·출처 정확도 <strong>미검증</strong></li>
-      </ul>
-    </div>
+  <div class="card">
+    <h4><span class="num">✓</span>요약</h4>
+    <ul class="small">
+      <li>Work IQ MCP(Teams·Mail) → LLM 추출·요약 → <strong>리뷰 가능한 Markdown 위키</strong></li>
+      <li>두 커넥터(Agent365 / Work IQ) · 두 표면(웹앱 <code>app/pipeline</code> / 노트북 독립 재구현)</li>
+      <li>Human-in-the-loop · 토큰·스코프 격리 · 신원 분리</li>
+    </ul>
   </div>
 
   <h3>보안 — 구현됨 vs 필요함</h3>

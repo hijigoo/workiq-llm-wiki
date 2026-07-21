@@ -254,8 +254,8 @@
     <thead><tr><th>실행 표면</th><th>커넥터</th><th>인증 방식</th><th>pipeline 공유</th></tr></thead>
     <tbody>
       <tr><td><strong>웹앱</strong> <code>app/</code> (FastAPI)</td><td>Agent365 (+ Work IQ)</td><td>Authorization Code (+ PKCE / secret)</td><td><span class="chk">✔</span> <code>app/pipeline</code></td></tr>
-      <tr><td><strong>노트북 01–04</strong></td><td>Agent365 (Mail·Teams 개별)</td><td>device-code · 자체 앱</td><td>독립 실행</td></tr>
-      <tr><td><strong>노트북 05–06</strong></td><td>Work IQ (단일 엔드포인트)</td><td>device-code · 자체 앱 <strong>(기본·통일)</strong> / 옵션: MS 공개 클라이언트</td><td>독립 실행</td></tr>
+      <tr><td><strong>노트북 01–04</strong></td><td>Agent365 (Mail·Teams 개별)</td><td>device-code · 자체 앱 (기본)</td><td>독립 실행</td></tr>
+      <tr><td><strong>노트북 05–06</strong></td><td>Work IQ (단일 엔드포인트)</td><td>device-code · 자체 앱 <strong>(기본)</strong> / 옵션: MS 공개 클라이언트</td><td>독립 실행</td></tr>
     </tbody>
   </table>
   <div class="callout info"><span class="lbl">스코프 정직하게</span>
@@ -550,7 +550,7 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
       <tr><td>토폴로지</td><td>소스별 <strong>개별 서버</strong>(mail/teams)</td><td><strong>단일 엔드포인트</strong></td></tr>
       <tr><td>도구</td><td>소스별 전용 도구(다수)</td><td>범용 <strong>10개</strong>, 경로 기반</td></tr>
       <tr><td>의미검색</td><td>서버 도구(SearchMessages 등)</td><td><code>ask</code>(Copilot) / <code>fetch</code>(원시)</td></tr>
-      <tr><td>노트북 인증</td><td>device-code · 자체 앱</td><td><strong>device-code · 자체 앱</strong> · 옵션 MS 공개 클라이언트</td></tr>
+      <tr><td>노트북 인증</td><td>device-code · 자체 앱 (기본)</td><td><strong>device-code · 자체 앱 (기본)</strong> · 옵션 MS 공개 클라이언트</td></tr>
       <tr><td>앱 등록</td><td>필요(권한+동의)</td><td>기본(통일)은 <strong>필요</strong> · 옵션은 <strong>불필요</strong>(아래)</td></tr>
       <tr><td>노트북</td><td>01–04</td><td>05–06</td></tr>
     </tbody>
@@ -572,7 +572,7 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
 
   <div class="grid g3">
     <div class="card"><h4><span class="num">①</span>테넌트 / 라이선스</h4><p class="small muted">테넌트에 <strong>Work IQ MCP 프로비저닝</strong>, Work IQ 미리보기 <strong>라이선스/과금·EULA</strong>, 로그인 계정에 <strong>사서함·Teams 멤버십</strong>.</p></div>
-    <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code · 자체 앱.</p></div>
+    <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code · 자체 앱 (기본).</p></div>
     <div class="card"><h4><span class="num">③</span>커넥터별 동의</h4><p class="small muted"><strong>Agent365</strong>: Agent Tools 리소스 앱에 <code>McpServers.*.All</code> 위임 권한 + 관리자 동의. <strong>Work IQ(웹앱·노트북 기본)</strong>: <code>WorkIQAgent.Ask</code> 동의.</p></div>
     <div class="card"><h4><span class="num">④</span>LLM 신원(별개)</h4><p class="small muted">Azure OpenAI <strong>키리스</strong>(<code>DefaultAzureCredential</code>) — <em>Cognitive Services OpenAI User</em> 역할 필요. 데이터 접근 신원과 완전 분리.</p></div>
     <div class="card"><h4><span class="num">⑤</span>관리자 동의 권한</h4><p class="small muted">Cloud/Application Administrator 등 <strong>관리자 동의</strong> 가능한 사람 확보. 조건부 액세스가 device-code를 막을 수 있음.</p></div>
@@ -755,8 +755,8 @@ az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pr
     <tbody>
       <tr>
         <td><strong>1 · 인증</strong></td>
-        <td>01 · device-code · <strong>자체 앱</strong><br><code>.token_cache.json</code></td>
-        <td>05·06 · <strong>device-code · 자체 앱</strong>(01–04와 통일, 공유 <code>.token_cache.json</code>)<br>옵션: MS 공개 클라이언트 <code>.workiq.token_cache.json</code></td>
+        <td>01 · device-code · <strong>자체 앱 (기본)</strong><br><code>.token_cache.json</code></td>
+        <td>05·06 · <strong>device-code · 자체 앱 (기본)</strong>(01–04와 통일, 공유 <code>.token_cache.json</code>)<br>옵션: MS 공개 클라이언트 <code>.workiq.token_cache.json</code></td>
       </tr>
       <tr>
         <td><strong>2 · 시드</strong></td>

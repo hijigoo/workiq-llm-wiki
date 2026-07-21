@@ -5,7 +5,8 @@
 
 > 이 프로젝트는 `../samples/{teams,mail}-mcp-web-sample`의 실제 연동 기록(`SETUP-LOG.md`)을
 > 기반으로 합니다. 샘플은 웹 리다이렉트를 쓰는 **authorization-code + PKCE(기밀 클라이언트)**
-> 였고, 이 파이썬 파이프라인은 **device-code(공개 클라이언트)** 를 기본으로 씁니다.
+> 였고, 이 파이썬 파이프라인은 **자체 앱을 등록해 device-code(자체 앱, 기본)** 로 로그인합니다
+> (웹 리다이렉트·클라이언트 시크릿 불필요).
 
 ---
 
@@ -78,10 +79,10 @@ CLIENT_ID=<appId>
 az ad sp create --id "$CLIENT_ID"
 ```
 
-> **왜 전용 앱?** 운영 중인 기밀(웹) 앱을 그대로 공개 클라이언트로 바꾸지 마세요. 공개/기밀
+> **왜 전용 앱?** 운영 중인 기밀(웹) 앱에 그대로 공개 클라이언트 흐름을 켜지 마세요. 공개/기밀
 > 흐름은 공존 가능하지만, 의도치 않게 보안 자세를 바꿀 수 있습니다.
 
-**device-code(공개 클라이언트) 활성화 — 필수:**
+**공개 클라이언트 흐름 허용 — device-code에 필수:**
 
 ```bash
 az ad app update --id "$CLIENT_ID" --is-fallback-public-client true

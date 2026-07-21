@@ -281,7 +281,7 @@ sequenceDiagram
 **흐름**: 03과 동일하지만 커넥터가 **Work IQ MCP**(단일 엔드포인트, 범용 도구)입니다. 토큰 확보 → `list_tools`로 10개 범용 도구 확인 → `search_paths`로 사용 가능한 Graph 경로 탐색 → `fetch`로 경로를 **직접 읽기**(`/me/messages`, `/me/chats/{id}/messages`) → `ask`로 **자연어 조회**(02 샘플 되읽기).
 
 - **핵심 차이(03 대비)**: 도구가 소스별 전용 이름(`SearchMessages`)이 아니라 **경로 기반 범용 도구**입니다. `fetch`는 원시 Graph 조회(의미검색 아님), `ask`는 M365 Copilot 의미검색/추론입니다. `/me/chats`는 채팅 **목록**이라 메시지는 `/me/chats/{id}/messages`로 한 단계 더 들어갑니다(컬렉션 기본 $top=25·최대 100, 채팅 메시지 최대 10).
-- **인증**: Microsoft 공개 Work IQ 클라이언트를 기본값으로 써 **별도 앱 등록이 필요 없습니다**. 기본 `interactive`(로컬 브라우저·루프백), 원격/헤드리스는 `WORKIQ_AUTH_MODE=device_code`. **회사·학교 계정 + 관리자 동의 + EULA**가 필요합니다(개인 계정 불가). 로그인은 `.workiq.token_cache.json`에 캐시됩니다.
+- **인증**: 기본은 웹앱/01–04와 **동일한 자체 앱 등록(`CLIENT_ID`) + device-code(자체 앱, 기본)** 로 공유 `.token_cache.json`을 재사용합니다(로그인 1회로 통일). 앱 등록에 `WorkIQAgent.Ask` 위임 동의가 필요합니다. **옵션**으로 `WORKIQ_USE_PUBLIC_CLIENT=true`이면 별도 앱 등록이 필요 없는 **MS 공개 Work IQ 클라이언트**(기본 `interactive`·로컬 브라우저·루프백, 원격/헤드리스는 `WORKIQ_AUTH_MODE=device_code`, 캐시 `.workiq.token_cache.json`)를 씁니다. 어느 방식이든 **회사·학교 계정 + 관리자 동의 + EULA**가 필요합니다(개인 계정 불가).
 
 ## 06 · Work IQ MCP 로 취합 → 위키 Markdown 생성
 

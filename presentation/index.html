@@ -505,14 +505,14 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
       <tr><td>토폴로지</td><td>소스별 <strong>개별 서버</strong>(mail/teams)</td><td><strong>단일 엔드포인트</strong></td></tr>
       <tr><td>도구</td><td>소스별 전용 도구(다수)</td><td>범용 <strong>10개</strong>, 경로 기반</td></tr>
       <tr><td>의미검색</td><td>서버 도구(SearchMessages 등)</td><td><code>ask</code>(Copilot) / <code>fetch</code>(원시)</td></tr>
-      <tr><td>노트북 인증</td><td>device-code</td><td>MS 공개 Work IQ 클라이언트</td></tr>
-      <tr><td>앱 등록</td><td>필요(권한+동의)</td><td><strong>노트북은 불필요</strong> · <strong>웹앱은 필요</strong>(아래)</td></tr>
+      <tr><td>노트북 인증</td><td>device-code (자체 앱)</td><td><strong>device-code (공개 클라이언트)</strong> · 옵션 MS 공개 Work IQ 클라이언트</td></tr>
+      <tr><td>앱 등록</td><td>필요(권한+동의)</td><td>기본(통일)은 <strong>필요</strong> · 옵션은 <strong>불필요</strong>(아래)</td></tr>
       <tr><td>노트북</td><td>01–04</td><td>05–06</td></tr>
     </tbody>
   </table>
-  <div class="callout warn"><span class="lbl">"앱 등록 불필요"의 정확한 범위</span>
-    Work IQ가 <strong>별도 앱 등록 없이</strong> 되는 것은 <strong>노트북 05·06</strong>(Microsoft 공개 Work IQ 클라이언트) 한정.
-    <strong>웹앱/<code>pipeline</code> 경로</strong>는 자체 <code>CLIENT_ID</code>로 토큰을 받으므로 앱 등록에 <code>WorkIQAgent.Ask</code> 위임 권한 동의가 필요하다(<code>config.py</code>).</div>
+  <div class="callout warn"><span class="lbl">Work IQ 인증 — 기본은 웹앱과 통일</span>
+    노트북 05·06도 <strong>기본적으로 웹앱/01–04와 동일한 자체 <code>CLIENT_ID</code> + device-code(공개 클라이언트) + 공유 캐시</strong>(<code>.token_cache.json</code>)를 사용한다 → 앱 등록에 <code>WorkIQAgent.Ask</code> 위임 동의가 필요(<code>config.py</code>와 동일).
+    <strong>옵션</strong>으로 <code>WORKIQ_USE_PUBLIC_CLIENT=true</code>를 켜면 <strong>Microsoft 공개 Work IQ 클라이언트</strong>(앱 등록 불필요)로 전환된다.</div>
   <div class="callout info"><span class="lbl">선택 기준</span>
     단일 엔드포인트·최소 도구·경로 유연성이 필요하면 <strong>Work IQ MCP</strong>, 소스별 전용 도구/세밀 제어가 필요하거나 테넌트에 Work IQ가 없으면 <strong>Agent365 Tools MCP</strong>. 흐름은 동일하므로 환경에 맞춰 선택.</div>
   <p class="tiny">참고: <a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/work-iq/mcp/overview">Work IQ MCP overview</a> ·
@@ -528,7 +528,7 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
   <div class="grid g3">
     <div class="card"><h4><span class="num">①</span>테넌트 / 라이선스</h4><p class="small muted">테넌트에 <strong>Work IQ MCP 프로비저닝</strong>, Work IQ 미리보기 <strong>라이선스/과금·EULA</strong>, 로그인 계정에 <strong>사서함·Teams 멤버십</strong>.</p></div>
     <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code / 공개 클라이언트.</p></div>
-    <div class="card"><h4><span class="num">③</span>커넥터별 동의</h4><p class="small muted"><strong>Agent365</strong>: Agent Tools 리소스 앱에 <code>McpServers.*.All</code> 위임 권한 + 관리자 동의. <strong>Work IQ(웹앱)</strong>: <code>WorkIQAgent.Ask</code> 동의.</p></div>
+    <div class="card"><h4><span class="num">③</span>커넥터별 동의</h4><p class="small muted"><strong>Agent365</strong>: Agent Tools 리소스 앱에 <code>McpServers.*.All</code> 위임 권한 + 관리자 동의. <strong>Work IQ(웹앱·노트북 기본)</strong>: <code>WorkIQAgent.Ask</code> 동의.</p></div>
     <div class="card"><h4><span class="num">④</span>LLM 신원(별개)</h4><p class="small muted">Azure OpenAI <strong>키리스</strong>(<code>DefaultAzureCredential</code>) — <em>Cognitive Services OpenAI User</em> 역할 필요. 데이터 접근 신원과 완전 분리.</p></div>
     <div class="card"><h4><span class="num">⑤</span>관리자 동의 권한</h4><p class="small muted">Cloud/Application Administrator 등 <strong>관리자 동의</strong> 가능한 사람 확보. 조건부 액세스가 device-code를 막을 수 있음.</p></div>
     <div class="card"><h4><span class="num">⑥</span>무인 자동화 주의</h4><p class="small muted">위임 토큰은 <strong>만료</strong>되고 <strong>사람 리뷰</strong>가 필수라, 완전 무인 스케줄은 어렵다(초안 생성까지만 자동화 권장).</p></div>
@@ -690,7 +690,7 @@ az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pr
   <h3>데이터 흐름 — 공통 4단계</h3>
   <p class="small muted">두 커넥터(Agent 365 · Work IQ)는 <strong>흐름이 똑같다.</strong> 아래 4단계를 그대로 따르고 <strong>인증 방식·도구만 다르다.</strong></p>
   <div class="flow">
-    <div class="step"><div class="tag">STEP 1 · 인증</div><h5>로그인 → 토큰 캐시</h5><p>커넥터별로 캐시 파일이 분리됨</p></div>
+    <div class="step"><div class="tag">STEP 1 · 인증</div><h5>로그인 → 토큰 캐시</h5><p>기본은 통일된 자체 앱·공유 캐시(로그인 1번)</p></div>
     <div class="arrow">→</div>
     <div class="step"><div class="tag">STEP 2 · 시드</div><h5>M365에 샘플 적재</h5><p>02가 메일·Teams에 1회 주입</p></div>
     <div class="arrow">→</div>
@@ -700,7 +700,7 @@ az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pr
   </div>
 
   <div class="callout info"><span class="lbl">꼭 기억할 3가지</span>
-    <strong>①</strong> 로그인은 <strong>커넥터마다 따로</strong> (<code>.token_cache.json</code> ↔ <code>.workiq.token_cache.json</code>).
+    <strong>①</strong> 인증은 <strong>기본적으로 통일</strong> — 자체 앱 + device-code + 공유 <code>.token_cache.json</code>로 <strong>로그인 1번</strong>(옵션 공개 클라이언트만 별도 <code>.workiq.token_cache.json</code>).
     <strong>②</strong> <strong>02가 넣은 샘플 하나</strong>를 양쪽이 공유해서 읽음.
     <strong>③</strong> <strong>취합(04·06)만</strong> <code>notebook/wiki/*.md</code>로 저장, 조회(03·05)는 확인용.</div>
 
@@ -711,7 +711,7 @@ az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pr
       <tr>
         <td><strong>1 · 인증</strong></td>
         <td>01 · device-code · <strong>자체 앱</strong><br><code>.token_cache.json</code></td>
-        <td>05·06 내장 · interactive · <strong>MS 공개 클라이언트</strong><br><code>.workiq.token_cache.json</code></td>
+        <td>05·06 · <strong>device-code · 자체 앱</strong>(01–04와 통일, 공유 <code>.token_cache.json</code>)<br>옵션: MS 공개 클라이언트 <code>.workiq.token_cache.json</code></td>
       </tr>
       <tr>
         <td><strong>2 · 시드</strong></td>
@@ -855,7 +855,8 @@ query: "팀즈와 메일 기술 내용 모두"   generator: "llmwiki-pipeline"
       <tr><td><code>TENANT_ID</code> / <code>CLIENT_ID</code></td><td>테넌트·앱 등록 클라이언트 ID</td></tr>
       <tr><td><code>AUTH_MODE</code></td><td><code>device_code</code>(기본) / <code>client_credentials</code></td></tr>
       <tr><td><code>MAIL_MCP_SERVER_URL</code> / <code>TEAMS_MCP_SERVER_URL</code></td><td>비우면 <code>TENANT_ID</code>로 자동 구성</td></tr>
-      <tr><td><code>WORKIQ_SCOPE</code></td><td>웹앱 Work IQ 위임 스코프(<code>WorkIQAgent.Ask</code>)</td></tr>
+      <tr><td><code>WORKIQ_SCOPE</code></td><td>Work IQ 위임 스코프(<code>WorkIQAgent.Ask</code>) — 웹앱·노트북 공통</td></tr>
+      <tr><td><code>WORKIQ_USE_PUBLIC_CLIENT</code></td><td><code>true</code>면 노트북 05·06이 MS 공개 Work IQ 클라이언트 사용(앱 등록 불필요). 기본 <code>false</code>=통일</td></tr>
       <tr><td>LLM (택1)</td><td>OpenAI <code>OPENAI_API_KEY</code> / Azure <code>AZURE_OPENAI_ENDPOINT</code>+<code>DEPLOYMENT</code></td></tr>
     </tbody>
   </table>

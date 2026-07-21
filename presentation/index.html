@@ -393,9 +393,9 @@
       <div class="code-note">단, 이는 <strong>git 커밋을 보호</strong>하는 것이지 상류 MCP 액션을 막는 건 아니다(정직하게).</div>
     </div>
     <div class="principle">
-      <h5>토큰·스코프 격리</h5>
-      <div class="why">Mail/Teams는 서로 다른 OAuth 리소스 → <strong>소스별 토큰</strong>, 안 섞음.</div>
-      <div class="code-note"><code>mail__ / teams__</code> 네임스페이스 + registry로만 라우팅(모델이 준 이름 불신). <strong>단, LLM 컨텍스트에선 데이터가 합쳐짐 → 데이터 격리는 아님.</strong></div>
+      <h5>두 가지 MCP 접근</h5>
+      <div class="why"><strong>Work IQ Tools MCP (Agent365)</strong> = 소스별 개별 서버·전용 도구 / <strong>Work IQ MCP</strong> = 단일 엔드포인트·범용 도구.</div>
+      <div class="code-note">테넌트마다 <strong>프로비저닝·가용성</strong>이 달라 둘 다 구현 → 환경에 맞는 쪽 선택. 추출→생성 <strong>흐름은 동일</strong>해 커넥터만 교체하면 된다.</div>
     </div>
     <div class="principle">
       <h5>신원 분리</h5>

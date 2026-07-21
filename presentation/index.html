@@ -254,7 +254,7 @@
     <thead><tr><th>실행 표면</th><th>커넥터</th><th>인증 방식</th><th>pipeline 공유</th></tr></thead>
     <tbody>
       <tr><td><strong>웹앱</strong> <code>app/</code> (FastAPI)</td><td>Agent365 (+ Work IQ)</td><td>Authorization Code (+ PKCE / secret)</td><td><span class="chk">✔</span> <code>app/pipeline</code></td></tr>
-      <tr><td><strong>노트북 01–04</strong></td><td>Agent365 (Mail·Teams 개별)</td><td>device-code (공개 클라이언트)</td><td>독립 실행</td></tr>
+      <tr><td><strong>노트북 01–04</strong></td><td>Agent365 (Mail·Teams 개별)</td><td>device-code · 자체 앱</td><td>독립 실행</td></tr>
       <tr><td><strong>노트북 05–06</strong></td><td>Work IQ (단일 엔드포인트)</td><td>device-code · 자체 앱 <strong>(기본·통일)</strong> / 옵션: MS 공개 클라이언트</td><td>독립 실행</td></tr>
     </tbody>
   </table>
@@ -549,13 +549,13 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
       <tr><td>토폴로지</td><td>소스별 <strong>개별 서버</strong>(mail/teams)</td><td><strong>단일 엔드포인트</strong></td></tr>
       <tr><td>도구</td><td>소스별 전용 도구(다수)</td><td>범용 <strong>10개</strong>, 경로 기반</td></tr>
       <tr><td>의미검색</td><td>서버 도구(SearchMessages 등)</td><td><code>ask</code>(Copilot) / <code>fetch</code>(원시)</td></tr>
-      <tr><td>노트북 인증</td><td>device-code (자체 앱)</td><td><strong>device-code (공개 클라이언트)</strong> · 옵션 MS 공개 Work IQ 클라이언트</td></tr>
+      <tr><td>노트북 인증</td><td>device-code · 자체 앱</td><td><strong>device-code · 자체 앱</strong> · 옵션 MS 공개 클라이언트</td></tr>
       <tr><td>앱 등록</td><td>필요(권한+동의)</td><td>기본(통일)은 <strong>필요</strong> · 옵션은 <strong>불필요</strong>(아래)</td></tr>
       <tr><td>노트북</td><td>01–04</td><td>05–06</td></tr>
     </tbody>
   </table>
   <div class="callout warn"><span class="lbl">Work IQ 인증 — 기본은 웹앱과 통일</span>
-    노트북 05·06도 <strong>기본적으로 웹앱/01–04와 동일한 자체 <code>CLIENT_ID</code> + device-code(공개 클라이언트) + 공유 캐시</strong>(<code>.token_cache.json</code>)를 사용한다 → 앱 등록에 <code>WorkIQAgent.Ask</code> 위임 동의가 필요(<code>config.py</code>와 동일).
+    노트북 05·06도 <strong>기본적으로 웹앱/01–04와 동일한 자체 <code>CLIENT_ID</code> + device-code + 공유 캐시</strong>(<code>.token_cache.json</code>)를 사용한다 → 앱 등록에 <code>WorkIQAgent.Ask</code> 위임 동의가 필요(<code>config.py</code>와 동일).
     <strong>옵션</strong>으로 <code>WORKIQ_USE_PUBLIC_CLIENT=true</code>를 켜면 <strong>Microsoft 공개 Work IQ 클라이언트</strong>(앱 등록 불필요)로 전환된다.</div>
   <div class="callout info"><span class="lbl">선택 기준</span>
     단일 엔드포인트·최소 도구·경로 유연성이 필요하면 <strong>Work IQ MCP</strong>, 소스별 전용 도구/세밀 제어가 필요하거나 테넌트에 Work IQ가 없으면 <strong>Agent365 Tools MCP</strong>. 흐름은 동일하므로 환경에 맞춰 선택.</div>
@@ -571,7 +571,7 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
 
   <div class="grid g3">
     <div class="card"><h4><span class="num">①</span>테넌트 / 라이선스</h4><p class="small muted">테넌트에 <strong>Work IQ MCP 프로비저닝</strong>, Work IQ 미리보기 <strong>라이선스/과금·EULA</strong>, 로그인 계정에 <strong>사서함·Teams 멤버십</strong>.</p></div>
-    <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code / 공개 클라이언트.</p></div>
+    <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code · 자체 앱.</p></div>
     <div class="card"><h4><span class="num">③</span>커넥터별 동의</h4><p class="small muted"><strong>Agent365</strong>: Agent Tools 리소스 앱에 <code>McpServers.*.All</code> 위임 권한 + 관리자 동의. <strong>Work IQ(웹앱·노트북 기본)</strong>: <code>WorkIQAgent.Ask</code> 동의.</p></div>
     <div class="card"><h4><span class="num">④</span>LLM 신원(별개)</h4><p class="small muted">Azure OpenAI <strong>키리스</strong>(<code>DefaultAzureCredential</code>) — <em>Cognitive Services OpenAI User</em> 역할 필요. 데이터 접근 신원과 완전 분리.</p></div>
     <div class="card"><h4><span class="num">⑤</span>관리자 동의 권한</h4><p class="small muted">Cloud/Application Administrator 등 <strong>관리자 동의</strong> 가능한 사람 확보. 조건부 액세스가 device-code를 막을 수 있음.</p></div>
@@ -744,7 +744,7 @@ az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pr
   </div>
 
   <div class="callout info"><span class="lbl">꼭 기억할 3가지</span>
-    <strong>①</strong> 인증은 <strong>기본적으로 통일</strong> — 자체 앱 + device-code + 공유 <code>.token_cache.json</code>로 <strong>로그인 1번</strong>(옵션 공개 클라이언트만 별도 <code>.workiq.token_cache.json</code>).
+    <strong>①</strong> 인증은 <strong>기본적으로 통일</strong> — 자체 앱 + device-code + 공유 <code>.token_cache.json</code>로 <strong>로그인 1번</strong>(옵션 MS 공개 클라이언트만 별도 <code>.workiq.token_cache.json</code>).
     <strong>②</strong> <strong>02가 넣은 샘플 하나</strong>를 양쪽이 공유해서 읽음.
     <strong>③</strong> <strong>취합(04·06)만</strong> <code>notebook/wiki/*.md</code>로 저장, 조회(03·05)는 확인용.</div>
 

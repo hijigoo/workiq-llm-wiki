@@ -32,8 +32,10 @@ llmwiki-pipeline/
 ├─ notebook/
 │  ├─ 01_setup_mcp.ipynb          # 연결·인증·툴 목록 (먼저 실행)
 │  ├─ 02_seed_sample_data.ipynb   # write 도구로 샘플 전송
-│  ├─ 03_fetch_data.ipynb         # MCP 툴 직접 호출
-│  └─ 04_nl_aggregate_to_md.ipynb # 자연어 취합 → Markdown
+│  ├─ 03_fetch_data.ipynb         # (Agent365) MCP 툴 직접 호출
+│  ├─ 04_nl_aggregate_to_md.ipynb # (Agent365) 자연어 취합 → Markdown
+│  ├─ 05_workiq_fetch_data.ipynb      # (Work IQ MCP) 범용 툴 직접 호출
+│  └─ 06_workiq_aggregate_to_md.ipynb # (Work IQ MCP) 자연어 취합 → Markdown
 ├─ .env.example
 ├─ requirements.txt
 ├─ SETUP.md               # 테넌트/Entra 상세 설정 · 문제 해결
@@ -137,6 +139,13 @@ az ad app permission admin-consent --id "$CLIENT_ID"
 2. `02_seed_sample_data.ipynb` — 샘플 기술/노하우 메일·Teams 메시지 전송(실데이터 write)
 3. `03_fetch_data.ipynb` — MCP 툴 직접 호출로 데이터 조회
 4. `04_nl_aggregate_to_md.ipynb` — 자연어 취합 → Markdown 생성(선택적 저장/커밋)
+
+**Work IQ MCP 변형(선택)** — 위 `03`·`04`는 Agent365(메일/Teams **개별** 서버, 소스별 도구)를
+쓰고, 아래 `05`·`06`은 **Work IQ MCP**(단일 엔드포인트 + `fetch`/`search_paths`/`ask` 범용 도구)를
+씁니다. 흐름은 같으므로 환경에 맞는 쪽을 고르면 됩니다.
+
+5. `05_workiq_fetch_data.ipynb` — Work IQ MCP 범용 툴 직접 호출로 데이터 조회
+6. `06_workiq_aggregate_to_md.ipynb` — Work IQ `ask`(기본) 또는 에이전트 루프로 취합 → Markdown
 
 ```bash
 source .venv/bin/activate

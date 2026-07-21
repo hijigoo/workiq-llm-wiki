@@ -326,7 +326,7 @@
 
     <!-- dashboard read-back: both stores (① repo, ② blob) -> dashboard (dashed) -->
     <line x1="900" y1="400" x2="900" y2="84" stroke="#0891b2" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#acy)"/>
-    <path d="M500 510 H955 V95 H862 V84" fill="none" stroke="#0891b2" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#acy)"/>
+    <path d="M500 510 H955 V49 H900" fill="none" stroke="#0891b2" stroke-width="1.6" stroke-dasharray="6 5" marker-end="url(#acy)"/>
     <text transform="rotate(-90 924 250)" x="924" y="250" text-anchor="middle" font-size="12" fill="#0e7490">대시보드가 조회·열람</text>
   </svg>
   <div class="figcap">원천 소스 → <strong>웹훅·일배치 수집</strong> → Azure Function(<strong>전처리 · LLM 강화 · Wikilink MD</strong>) → <strong>사람 검토(HIL)</strong> → <strong>①</strong> GitHub KB Repo <em>또는</em> <strong>②</strong> Azure Queue→Blob. Container App 대시보드가 이를 조회.</div>

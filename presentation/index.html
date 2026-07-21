@@ -775,22 +775,19 @@ az ad sp create --id <span class="k1">fdcc1f02-fc51-4226-8753-f668596af7f7</span
 
   <h3>향후 배포 구상 <span class="pill o">Future / 미구현</span></h3>
   <div class="card soft">
-    <p class="small">초기 스케치(탭 1) 기반의 <strong>지향 아키텍처</strong> — 현재 as-built가 아니다. 데모의 <strong>수집 → 가공 → 사람 검토 → 저장 → 열람</strong> 흐름을 <strong>서버리스 파이프라인</strong>으로 옮기는 것이 목표.</p>
+    <p class="small">초기 스케치(탭 1) 기반의 <strong>지향 아키텍처</strong> — 현재 as-built가 아니다.</p>
     <div class="flow">
-      <div class="step" style="min-width:150px"><div class="tag">1 · Ingest</div><h5>수집</h5><p><strong>웹훅·일배치</strong>로 PR·Teams·Confluence·Jira·Email·Monitor에서 수집. API 지연 시 <strong>수작업 수집</strong>도 허용.</p></div>
+      <div class="step" style="min-width:140px"><div class="tag">1 · Ingest</div><h5>수집</h5><p>웹훅 · 일배치</p></div>
       <div class="arrow">→</div>
-      <div class="step" style="min-width:150px"><div class="tag">2 · Transform</div><h5>Azure Function (Durable)</h5><p>전처리 → <strong>LLM 강화</strong> → <strong>Wikilink MD</strong> 생성. 위키는 <strong>Obsidian 기반</strong>.</p></div>
+      <div class="step" style="min-width:140px"><div class="tag">2 · Transform</div><h5>Azure Function</h5><p>LLM 강화 · Wikilink MD</p></div>
       <div class="arrow">→</div>
-      <div class="step" style="min-width:150px"><div class="tag">3 · Review</div><h5>사람 검토 (HIL)</h5><p>초안 <strong>승인 게이트</strong> — 저장 전 사람이 확인·수정.</p></div>
+      <div class="step" style="min-width:140px"><div class="tag">3 · Review</div><h5>사람 검토 (HIL)</h5><p>승인 게이트</p></div>
       <div class="arrow">→</div>
-      <div class="step" style="min-width:150px"><div class="tag">4 · Store · 택1</div><h5>① GitHub KB · ② Queue→Blob</h5><p><strong>①</strong> 커밋되는 위키 저장소 <em>또는</em> <strong>②</strong> Azure Queue→Blob 비동기 운영.</p></div>
+      <div class="step" style="min-width:140px"><div class="tag">4 · Store</div><h5>① GitHub · ② Blob</h5><p>택1 저장</p></div>
       <div class="arrow">→</div>
-      <div class="step" style="min-width:150px"><div class="tag">5 · View</div><h5>Container App 대시보드</h5><p>저장소를 <strong>조회·열람</strong>하는 LLM Wiki UI.</p></div>
+      <div class="step" style="min-width:140px"><div class="tag">5 · View</div><h5>대시보드</h5><p>Container App 열람</p></div>
     </div>
-    <div class="grid g2" style="margin-top:14px">
-      <div class="callout info" style="margin:0"><span class="lbl">병렬 트랙 · Grapify</span> 소스코드를 <strong>코드 그래프화</strong> → 의존성 · <strong>변경 영향도</strong> · 코드 분석에 활용하고 위키와 상호 링크.</div>
-      <div class="callout warn" style="margin:0"><span class="lbl">스케줄 자동화 주의</span> <strong>위임 토큰 만료</strong>·<strong>필수 사람 리뷰</strong>와 상충 — 자동은 <strong>"초안 생성"</strong>까지, 커밋은 사람이.</div>
-    </div>
+    <div class="callout warn" style="margin:14px 0 2px"><span class="lbl">주의</span> 스케줄 자동화는 <strong>위임 토큰 만료</strong>·<strong>사람 리뷰</strong>와 상충 — 자동은 "초안"까지, 커밋은 사람이. 소스코드는 <strong>Grapify</strong>로 코드 그래프화(병렬 트랙).</div>
   </div>
 </section>
 

@@ -860,13 +860,6 @@ query: "팀즈와 메일 기술 내용 모두"   generator: "llmwiki-pipeline"
     </tbody>
   </table>
 
-  <h3>MCP 연결 패턴 (최신 SDK)</h3>
-  <pre><span class="k1">async with</span> create_mcp_http_client(headers={<span class="s1">'Authorization'</span>: f<span class="s1">'Bearer …'</span>}) <span class="k1">as</span> http_client:
-    <span class="k1">async with</span> streamable_http_client(url, http_client=http_client) <span class="k1">as</span> (r, w, _):
-        <span class="k1">async with</span> ClientSession(r, w) <span class="k1">as</span> s:
-            <span class="k1">await</span> s.initialize()
-            <span class="c1"># list_tools() / call_tool()</span></pre>
-
   <h3>MCP 서버 URL 형태</h3>
   <pre>https://agent365.svc.cloud.microsoft/agents/tenants/<span class="k1">{TENANT_ID}</span>/servers/mcp_MailTools
 https://agent365.svc.cloud.microsoft/agents/tenants/<span class="k1">{TENANT_ID}</span>/servers/mcp_TeamsServer

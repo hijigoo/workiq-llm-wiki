@@ -660,6 +660,42 @@ az ad sp create --id <span class="k1">fdcc1f02-fc51-4226-8753-f668596af7f7</span
   </details>
 
   <details>
+    <summary>포털에서 Agent 365 Agent Tools 등록 (Graph Explorer · Entra · M365 admin)</summary>
+    <div class="callout info" style="margin:2px 0 14px"><span class="lbl">요약</span>
+      <code>az ad sp create --id ea9ffc3e-…</code>의 가장 가까운 <strong>포털 방식은 Graph Explorer</strong>. 포털은 SP <em>생성</em>보다 <strong>생성 후 관리</strong>(Enterprise app · 도구 허용)에 쓰는 쪽이다.</div>
+    <div class="grid g3">
+      <div class="idcol a">
+        <h5>① Graph Explorer로 등록</h5>
+        <ul class="small">
+          <li><a href="https://developer.microsoft.com/graph/graph-explorer" target="_blank" rel="noopener">developer.microsoft.com/graph/graph-explorer</a></li>
+          <li><strong>Admin 계정</strong>으로 로그인</li>
+          <li><code>POST https://graph.microsoft.com/v1.0/servicePrincipals</code></li>
+          <li>권한 <code>Application.ReadWrite.All</code> consent</li>
+          <li>Body: <code>{ "appId": "ea9ffc3e-8a23-4a7d-836d-234d7c7565c1" }</code></li>
+          <li><code>201 Created</code>=성공, <code>conflict</code>=이미 등록됨</li>
+        </ul>
+      </div>
+      <div class="idcol b">
+        <h5>② 등록 후 확인 — Entra 포털</h5>
+        <ul class="small">
+          <li>Entra admin center → <strong>Enterprise applications</strong> → All applications</li>
+          <li>앱 이름 또는 <code>appId</code>로 검색</li>
+          <li>여기서 <strong>권한 · consent · 사용자 할당</strong> 관리</li>
+        </ul>
+      </div>
+      <div class="idcol a">
+        <h5>③ 도구 사용 허용 — 별도</h5>
+        <ul class="small">
+          <li>Microsoft 365 admin center → <strong>Agents and Tools</strong>에서 MCP/Work IQ tools <strong>allow/block</strong></li>
+          <li>이건 <em>도구 거버넌스</em> UI — SP <strong>생성과는 역할이 다름</strong></li>
+        </ul>
+      </div>
+    </div>
+    <div class="callout info" style="margin:2px 0 2px"><span class="lbl">정리</span>
+      SP <strong>생성</strong>은 <strong>CLI 또는 Graph Explorer</strong>가 현실적. 포털은 <strong>생성 후</strong> Enterprise app 관리 · Agent tool allow/block에 사용.</div>
+  </details>
+
+  <details>
     <summary>흔한 오류 → 원인 / 조치</summary>
     <table style="box-shadow:none">
       <thead><tr><th>증상</th><th>원인 / 조치</th></tr></thead>

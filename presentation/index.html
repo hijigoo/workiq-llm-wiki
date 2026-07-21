@@ -617,10 +617,9 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
   <table>
     <thead><tr><th>구분</th><th>항목</th><th>값</th></tr></thead>
     <tbody>
-      <tr><td rowspan="4"><strong>Agent365</strong></td><td>Agent Tools 리소스 앱 (appId)</td><td><code>ea9ffc3e-8a23-4a7d-836d-234d7c7565c1</code></td></tr>
-      <tr><td>토큰 audience</td><td><code>https://agent365.svc.cloud.microsoft</code></td></tr>
-      <tr><td>Teams 위임 권한 ID</td><td><code>5efd4b9c-e459-40d4-a524-35db033b072f</code></td></tr>
-      <tr><td>Mail 위임 권한 ID</td><td>테넌트별로 다름 → 조회 필요</td></tr>
+      <tr><td rowspan="3"><strong>Agent365</strong></td><td>Agent Tools 리소스 앱 (appId)</td><td><code>ea9ffc3e-8a23-4a7d-836d-234d7c7565c1</code></td></tr>
+      <tr><td>위임 권한 / 스코프</td><td><code>McpServers.Mail.All</code> · <code>McpServers.Teams.All</code></td></tr>
+      <tr><td>MCP 엔드포인트</td><td><code>…/tenants/{TENANT_ID}/servers/mcp_MailTools · mcp_TeamsServer</code></td></tr>
       <tr><td rowspan="3"><strong>Work IQ</strong></td><td>Work IQ 리소스 앱 (appId)</td><td><code>fdcc1f02-fc51-4226-8753-f668596af7f7</code></td></tr>
       <tr><td>위임 권한 / 스코프</td><td><code>WorkIQAgent.Ask</code></td></tr>
       <tr><td>MCP 엔드포인트</td><td><code>https://workiq.svc.cloud.microsoft/mcp</code></td></tr>

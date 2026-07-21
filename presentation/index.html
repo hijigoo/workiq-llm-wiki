@@ -596,6 +596,7 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
         <li><strong>자체 Entra 앱 등록</strong> → client ID 확보(노트북은 <em>공개 클라이언트 흐름 허용</em>).</li>
         <li><strong>API 권한</strong>: "Agent 365 Tools"(<code>ea9ffc3e-…</code>) 검색 → <code>McpServers.Mail.All</code> · <code>McpServers.Teams.All</code> 추가 → <strong>관리자 동의</strong>.</li>
         <li>(SP 없으면) <code>az ad sp create --id ea9ffc3e-…</code>로 테넌트에 등록.</li>
+        <li><strong>인증(공통)</strong>: device-code · <strong>자체 앱</strong> — 등록한 앱으로 로그인.</li>
         <li>서버 <code>…/tenants/{TENANT_ID}/servers/mcp_MailTools · mcp_TeamsServer</code>에 <strong>소스별 토큰</strong>으로 접속.</li>
       </ol>
     </div>
@@ -607,7 +608,7 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
         <li><strong>Work IQ 프로비저닝</strong>(1회·Global Admin): SP <code>fdcc1f02-…</code> 생성 — Graph <code>POST /servicePrincipals</code> 또는 <code>az ad sp create --id fdcc1f02-…</code>.</li>
         <li><strong>위임 권한 동의</strong>: <code>WorkIQAgent.Ask</code>.</li>
         <li>엔드포인트 <code>https://workiq.svc.cloud.microsoft/mcp</code>, 스코프 <code>fdcc1f02-…/WorkIQAgent.Ask</code>.</li>
-        <li>인증은 <strong>device-code · 자체 앱 (기본)</strong> / 옵션 MS 공개 클라이언트.</li>
+        <li><strong>인증(공통)</strong>: device-code · <strong>자체 앱 (기본)</strong> / 옵션 MS 공개 클라이언트.</li>
       </ol>
     </div>
   </div>

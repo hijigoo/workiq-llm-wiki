@@ -570,24 +570,60 @@ ask          <span class="s1">"이번 분기 마감된 딜은?"</span>        <s
   <h2 class="title">사전 준비 — 접근 계약(Access Contract)</h2>
   <p class="lead">막히면 대개 여기. 먼저 <strong>큰 그림(무엇에 어떤 신원·동의가 필요한가)</strong>을 잡고, 세부 명령·GUID는 아래 접기에서.</p>
 
-  <div class="grid g3">
-    <div class="card"><h4><span class="num">①</span>테넌트 / 라이선스</h4><p class="small muted">테넌트에 <strong>Work IQ MCP 프로비저닝</strong>, Work IQ 미리보기 <strong>라이선스/과금·EULA</strong>, 로그인 계정에 <strong>사서함·Teams 멤버십</strong>.</p></div>
-    <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code · 자체 앱 (기본).</p></div>
-    <div class="card"><h4><span class="num">③</span>커넥터별 동의</h4><p class="small muted"><strong>Agent365</strong>: Agent Tools 리소스 앱에 <code>McpServers.*.All</code> 위임 권한 + 관리자 동의. <strong>Work IQ(웹앱·노트북 기본)</strong>: <code>WorkIQAgent.Ask</code> 동의.</p></div>
-    <div class="card"><h4><span class="num">④</span>LLM 신원(별개)</h4><p class="small muted">Azure OpenAI <strong>키리스</strong>(<code>DefaultAzureCredential</code>) — <em>Cognitive Services OpenAI User</em> 역할 필요. 데이터 접근 신원과 완전 분리.</p></div>
-    <div class="card"><h4><span class="num">⑤</span>관리자 동의 권한</h4><p class="small muted">Cloud/Application Administrator 등 <strong>관리자 동의</strong> 가능한 사람 확보. 조건부 액세스가 device-code를 막을 수 있음.</p></div>
-    <div class="card"><h4><span class="num">⑥</span>무인 자동화 주의</h4><p class="small muted">위임 토큰은 <strong>만료</strong>되고 <strong>사람 리뷰</strong>가 필수라, 완전 무인 스케줄은 어렵다(초안 생성까지만 자동화 권장).</p></div>
+  <div class="callout info" style="margin:6px 0 20px"><span class="lbl">참고 문서</span>
+    <div class="small" style="margin-top:8px;line-height:2">
+      <strong>Work IQ Tools MCP (Agent365)</strong> — <a href="https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/mcp-authentication#bring-your-own-microsoft-entra-app-registration" target="_blank" rel="noopener">MCP server authentication — Bring your own Microsoft Entra app registration</a><br>
+      <strong>Work IQ MCP</strong> — <a href="https://learn.microsoft.com/en-us/microsoft-365/copilot/extensibility/work-iq/enable-work-iq?tabs=entra-admin" target="_blank" rel="noopener">Enable your tenant for Work IQ</a> · <a href="https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/work-iq?pivots=python" target="_blank" rel="noopener">Connect agents to Microsoft 365 with Work IQ (preview) — Python</a>
+    </div>
   </div>
 
-  <h3>핵심 식별자</h3>
+  <h3>공통 <span class="muted" style="font-size:14px;font-weight:400">— 두 접근 모두 필요</span></h3>
+  <div class="grid g3">
+    <div class="card"><h4><span class="num">①</span>회사·학교 계정 · 데이터</h4><p class="small muted">work/school 계정(개인 계정 불가). 로그인 계정에 <strong>사서함·Teams 멤버십·실제 데이터</strong>가 있어야 조회됨.</p></div>
+    <div class="card"><h4><span class="num">②</span>M365 위임 신원</h4><p class="small muted">데이터 접근은 <strong>사용자 위임 로그인</strong>. 웹앱=Authorization Code, 노트북=device-code · 자체 앱 (기본).</p></div>
+    <div class="card"><h4><span class="num">③</span>관리자 동의 가능자</h4><p class="small muted">위임 권한 동의 가능한 <strong>관리자</strong>(Cloud/Application 또는 Global Administrator) 확보.</p></div>
+    <div class="card"><h4><span class="num">④</span>LLM 신원(별개)</h4><p class="small muted">Azure OpenAI <strong>키리스</strong>(<code>DefaultAzureCredential</code>) — <em>Cognitive Services OpenAI User</em> 역할. 데이터 신원과 완전 분리.</p></div>
+    <div class="card"><h4><span class="num">⑤</span>조건부 액세스</h4><p class="small muted">테넌트 정책(Conditional Access)이 <strong>device-code 흐름을 차단</strong>할 수 있음 → 관리자와 협의.</p></div>
+    <div class="card"><h4><span class="num">⑥</span>무인 자동화 한계</h4><p class="small muted">위임 토큰은 <strong>만료</strong>되고 <strong>사람 리뷰</strong>가 필수 → 완전 무인 스케줄은 어렵다(초안 생성까지만 자동화 권장).</p></div>
+  </div>
+
+  <h3 style="margin-top:24px">접근별 준비 <span class="muted" style="font-size:14px;font-weight:400">— 순서대로</span></h3>
+  <div class="grid g2">
+    <div class="idcol a">
+      <h5>Work IQ Tools MCP (Agent365)</h5>
+      <p class="small muted" style="margin:0 0 4px">소스별 개별 서버 · 자체 Entra 앱(BYO)</p>
+      <ol class="stepnum small">
+        <li><strong>Frontier 테넌트</strong> 필요 — Agent 365 MCP 서버는 Frontier 프로그램 대상.</li>
+        <li><strong>자체 Entra 앱 등록</strong> → client ID 확보(노트북은 <em>공개 클라이언트 흐름 허용</em>).</li>
+        <li><strong>API 권한</strong>: "Agent 365 Tools"(<code>ea9ffc3e-…</code>) 검색 → <code>McpServers.Mail.All</code> · <code>McpServers.Teams.All</code> 추가 → <strong>관리자 동의</strong>.</li>
+        <li>(SP 없으면) <code>az ad sp create --id ea9ffc3e-…</code>로 테넌트에 등록.</li>
+        <li>서버 <code>…/tenants/{TENANT_ID}/servers/mcp_MailTools · mcp_TeamsServer</code>에 <strong>소스별 토큰</strong>으로 접속.</li>
+      </ol>
+    </div>
+    <div class="idcol b">
+      <h5>Work IQ MCP</h5>
+      <p class="small muted" style="margin:0 0 4px">단일 엔드포인트 · 범용 도구</p>
+      <ol class="stepnum small">
+        <li><strong>M365 Copilot 라이선스</strong> + Copilot Studio <strong>사용량 기반 과금</strong>(Azure 구독·리소스 그룹)·EULA.</li>
+        <li><strong>Work IQ 프로비저닝</strong>(1회·Global Admin): SP <code>fdcc1f02-…</code> 생성 — Graph <code>POST /servicePrincipals</code> 또는 <code>az ad sp create --id fdcc1f02-…</code>.</li>
+        <li><strong>위임 권한 동의</strong>: <code>WorkIQAgent.Ask</code>.</li>
+        <li>엔드포인트 <code>https://workiq.svc.cloud.microsoft/mcp</code>, 스코프 <code>fdcc1f02-…/WorkIQAgent.Ask</code>.</li>
+        <li>인증은 <strong>device-code · 자체 앱 (기본)</strong> / 옵션 MS 공개 클라이언트.</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px">핵심 식별자</h3>
   <table>
-    <thead><tr><th>항목</th><th>값</th></tr></thead>
+    <thead><tr><th>구분</th><th>항목</th><th>값</th></tr></thead>
     <tbody>
-      <tr><td>Agent Tools 리소스 앱 (appId)</td><td><code>ea9ffc3e-8a23-4a7d-836d-234d7c7565c1</code></td></tr>
+      <tr><td rowspan="4"><strong>Agent365</strong></td><td>Agent Tools 리소스 앱 (appId)</td><td><code>ea9ffc3e-8a23-4a7d-836d-234d7c7565c1</code></td></tr>
       <tr><td>토큰 audience</td><td><code>https://agent365.svc.cloud.microsoft</code></td></tr>
       <tr><td>Teams 위임 권한 ID</td><td><code>5efd4b9c-e459-40d4-a524-35db033b072f</code></td></tr>
       <tr><td>Mail 위임 권한 ID</td><td>테넌트별로 다름 → 조회 필요</td></tr>
-      <tr><td>Work IQ(웹앱) 위임 권한</td><td><code>WorkIQAgent.Ask</code></td></tr>
+      <tr><td rowspan="3"><strong>Work IQ</strong></td><td>Work IQ 리소스 앱 (appId)</td><td><code>fdcc1f02-fc51-4226-8753-f668596af7f7</code></td></tr>
+      <tr><td>위임 권한 / 스코프</td><td><code>WorkIQAgent.Ask</code></td></tr>
+      <tr><td>MCP 엔드포인트</td><td><code>https://workiq.svc.cloud.microsoft/mcp</code></td></tr>
     </tbody>
   </table>
 
@@ -613,7 +649,11 @@ az ad sp show --id ea9ffc3e-8a23-4a7d-836d-234d7c7565c1 \
 az ad app permission add --id <span class="k1">"$CLIENT_ID"</span> \
   --api ea9ffc3e-8a23-4a7d-836d-234d7c7565c1 \
   --api-permissions <span class="k1">"$TEAMS_PERM_ID=Scope"</span> <span class="k1">"$MAIL_PERM_ID=Scope"</span>
-az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pre>
+az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span>
+
+<span class="c1"># 6) (Work IQ MCP) Work IQ 서비스 주체 프로비저닝 (테넌트당 1회 · Global Admin)</span>
+az ad sp create --id <span class="k1">fdcc1f02-fc51-4226-8753-f668596af7f7</span>
+<span class="c1">#    이후 WorkIQAgent.Ask 위임 동의 (Graph POST /servicePrincipals로도 가능)</span></pre>
     <div class="callout info" style="margin:2px 0 14px"><span class="lbl">용어</span>
       <strong>App registrations</strong> = 앱 정의, <strong>Enterprise applications</strong> = 서비스 주체(SP). <code>az ad sp create</code>가 후자를 만든다.
       관리자 동의는 클라이언트 SP↔리소스 SP 사이 <code>oauth2PermissionGrant</code>를 생성/갱신한다. 권한 변경 후엔 <code>.token_cache.json</code> 삭제 → 재로그인.</div>

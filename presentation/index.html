@@ -687,92 +687,53 @@ az ad app permission admin-consent --id <span class="k1">"$CLIENT_ID"</span></pr
     </tbody>
   </table>
 
-  <h3>데이터 흐름</h3>
-  <svg class="seq" viewBox="0 0 900 486" role="img" aria-label="노트북 데이터 흐름 (두 커넥터 스윔레인)">
-    <defs>
-      <marker id="nf" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4f46e5"/></marker>
-      <marker id="nr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#64748b"/></marker>
-      <marker id="nw" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#16a34a"/></marker>
-    </defs>
-
-    <!-- swimlane backgrounds -->
-    <rect x="12" y="44" width="876" height="196" rx="12" fill="#f5f7ff" stroke="#e0e4f5"/>
-    <rect x="12" y="252" width="876" height="196" rx="12" fill="#effcf9" stroke="#cdeee6"/>
-    <text x="26" y="66" font-size="12.5" font-weight="700" fill="#4f46e5">Agent 365 MCP · 노트북 01–04</text>
-    <text x="26" y="274" font-size="12.5" font-weight="700" fill="#0d9488">Work IQ MCP · 노트북 05–06</text>
-
-    <!-- Lane A boxes -->
-    <rect x="28" y="104" width="162" height="72" rx="10" fill="#eef2ff" stroke="#6366f1"/>
-    <text x="109" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#3730a3">01 · 로그인</text>
-    <text x="109" y="148" text-anchor="middle" font-size="10" fill="#5b6478">device-code · 자체 앱</text>
-    <text x="109" y="165" text-anchor="middle" font-size="10" fill="#5b6478">.token_cache.json</text>
-    <rect x="214" y="104" width="150" height="72" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="289" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="#1e2233">02 · 샘플 주입</text>
-    <text x="289" y="148" text-anchor="middle" font-size="10" fill="#5b6478">메일 2 · Teams 2</text>
-    <text x="289" y="165" text-anchor="middle" font-size="10" fill="#5b6478">(본인 사서함/팀)</text>
-    <rect x="566" y="100" width="176" height="60" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="654" y="124" text-anchor="middle" font-size="13" font-weight="700" fill="#1e2233">03 · 직접 조회</text>
-    <text x="654" y="143" text-anchor="middle" font-size="10" fill="#5b6478">SearchMessages 등 전용 도구</text>
-    <rect x="566" y="178" width="176" height="60" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="654" y="202" text-anchor="middle" font-size="13" font-weight="700" fill="#1e2233">04 · 취합 + LLM</text>
-    <text x="654" y="221" text-anchor="middle" font-size="10" fill="#5b6478">에이전트 루프(tool loop)</text>
-
-    <!-- Lane B boxes -->
-    <rect x="28" y="316" width="162" height="72" rx="10" fill="#ecfeff" stroke="#06b6d4"/>
-    <text x="109" y="342" text-anchor="middle" font-size="13" font-weight="700" fill="#0e7490">05·06 · 로그인</text>
-    <text x="109" y="360" text-anchor="middle" font-size="9.6" fill="#5b6478">interactive · MS 공개 client</text>
-    <text x="109" y="377" text-anchor="middle" font-size="9.6" fill="#5b6478">.workiq.token_cache.json</text>
-    <rect x="566" y="300" width="176" height="60" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="654" y="324" text-anchor="middle" font-size="13" font-weight="700" fill="#1e2233">05 · 직접 조회</text>
-    <text x="654" y="343" text-anchor="middle" font-size="10" fill="#5b6478">search_paths · fetch · ask</text>
-    <rect x="566" y="378" width="176" height="60" rx="10" fill="#fff" stroke="#c7cbe0"/>
-    <text x="654" y="402" text-anchor="middle" font-size="13" font-weight="700" fill="#1e2233">06 · 취합 + LLM</text>
-    <text x="654" y="421" text-anchor="middle" font-size="10" fill="#5b6478">ask 기반 (에이전트 옵션)</text>
-
-    <!-- shared M365 store (straddles both lanes) -->
-    <rect x="398" y="200" width="150" height="92" rx="10" fill="#fff7ed" stroke="#fb923c"/>
-    <text x="473" y="232" text-anchor="middle" font-size="13" font-weight="700" fill="#9a3412">M365 데이터</text>
-    <text x="473" y="251" text-anchor="middle" font-size="10.5" fill="#7c5230">사서함 · Teams</text>
-    <text x="473" y="269" text-anchor="middle" font-size="10" fill="#7c5230">02가 적재 → 양측 읽음</text>
-
-    <!-- shared wiki output (straddles both lanes) -->
-    <rect x="752" y="200" width="140" height="92" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
-    <text x="822" y="232" text-anchor="middle" font-size="12.5" font-weight="700" fill="#166534">notebook/</text>
-    <text x="822" y="250" text-anchor="middle" font-size="12.5" font-weight="700" fill="#166534">wiki/*.md</text>
-    <text x="822" y="270" text-anchor="middle" font-size="10" fill="#4d7c53">저장 · (옵션) 커밋</text>
-
-    <!-- arrows: flow/auth (solid indigo) -->
-    <line x1="190" y1="140" x2="212" y2="140" stroke="#4f46e5" marker-end="url(#nf)"/>
-    <line x1="364" y1="150" x2="428" y2="202" stroke="#4f46e5" marker-end="url(#nf)"/>
-    <text x="392" y="172" font-size="10" fill="#4f46e5">적재</text>
-    <line x1="190" y1="338" x2="564" y2="324" stroke="#4f46e5" marker-end="url(#nf)"/>
-    <line x1="190" y1="362" x2="564" y2="402" stroke="#4f46e5" marker-end="url(#nf)"/>
-    <text x="300" y="330" font-size="10" fill="#4f46e5">토큰 재사용</text>
-
-    <!-- arrows: read (dashed slate) -->
-    <line x1="548" y1="222" x2="564" y2="128" stroke="#64748b" stroke-dasharray="5 4" marker-end="url(#nr)"/>
-    <line x1="548" y1="240" x2="564" y2="202" stroke="#64748b" stroke-dasharray="5 4" marker-end="url(#nr)"/>
-    <line x1="548" y1="258" x2="564" y2="326" stroke="#64748b" stroke-dasharray="5 4" marker-end="url(#nr)"/>
-    <line x1="548" y1="276" x2="564" y2="404" stroke="#64748b" stroke-dasharray="5 4" marker-end="url(#nr)"/>
-
-    <!-- arrows: output (solid green) -->
-    <line x1="742" y1="212" x2="752" y2="234" stroke="#16a34a" marker-end="url(#nw)"/>
-    <line x1="742" y1="404" x2="754" y2="272" stroke="#16a34a" marker-end="url(#nw)"/>
-
-    <!-- legend -->
-    <line x1="30" y1="466" x2="54" y2="466" stroke="#4f46e5" marker-end="url(#nf)"/>
-    <text x="60" y="470" font-size="11" fill="#5b6478">흐름 · 인증</text>
-    <line x1="176" y1="466" x2="200" y2="466" stroke="#64748b" stroke-dasharray="5 4" marker-end="url(#nr)"/>
-    <text x="206" y="470" font-size="11" fill="#5b6478">데이터 읽기</text>
-    <line x1="326" y1="466" x2="350" y2="466" stroke="#16a34a" marker-end="url(#nw)"/>
-    <text x="356" y="470" font-size="11" fill="#5b6478">출력(파일)</text>
-  </svg>
-  <div class="figcap">두 커넥터는 <strong>인증(토큰 캐시)이 서로 분리</strong> — 01 로그인(<code>.token_cache.json</code>)은 02·03·04가 재사용, Work IQ(05·06)는 <strong>자체 로그인</strong>(<code>.workiq.token_cache.json</code>). 02가 M365에 적재한 샘플을 <strong>양쪽이 읽고</strong>, 위키 파일로 남는 건 <strong>04·06뿐</strong>(03·05는 조회 검증 단계).</div>
-
-  <div class="grid g2" style="margin-top:16px">
-    <div class="card"><h4><span class="num">A</span>01–04 · Agent365 MCP</h4><p class="small muted">Mail/Teams가 <strong>개별 서버</strong>, <code>SearchMessages</code> 같은 소스별 전용 도구. <code>.token_cache.json</code> 재사용.</p></div>
-    <div class="card"><h4><span class="num">B</span>05–06 · Work IQ MCP</h4><p class="small muted"><strong>단일 엔드포인트</strong> + <code>fetch/ask/search_paths</code> 범용 도구. 별도 <code>.workiq.token_cache.json</code>. 흐름은 03/04와 동일.</p></div>
+  <h3>데이터 흐름 — 공통 4단계</h3>
+  <p class="small muted">두 커넥터(Agent 365 · Work IQ)는 <strong>흐름이 똑같다.</strong> 아래 4단계를 그대로 따르고 <strong>인증 방식·도구만 다르다.</strong></p>
+  <div class="flow">
+    <div class="step"><div class="tag">STEP 1 · 인증</div><h5>로그인 → 토큰 캐시</h5><p>커넥터별로 캐시 파일이 분리됨</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="tag">STEP 2 · 시드</div><h5>M365에 샘플 적재</h5><p>02가 메일·Teams에 1회 주입</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="tag">STEP 3 · 활용</div><h5>조회 또는 취합(LLM)</h5><p>적재된 M365 데이터를 읽어 처리</p></div>
+    <div class="arrow">→</div>
+    <div class="step"><div class="tag">STEP 4 · 저장</div><h5>위키 Markdown</h5><p>취합 결과만 파일로 (조회는 검증용)</p></div>
   </div>
+
+  <div class="callout info"><span class="lbl">꼭 기억할 3가지</span>
+    <strong>①</strong> 로그인은 <strong>커넥터마다 따로</strong> (<code>.token_cache.json</code> ↔ <code>.workiq.token_cache.json</code>).
+    <strong>②</strong> <strong>02가 넣은 샘플 하나</strong>를 양쪽이 공유해서 읽음.
+    <strong>③</strong> <strong>취합(04·06)만</strong> <code>notebook/wiki/*.md</code>로 저장, 조회(03·05)는 확인용.</div>
+
+  <h3>커넥터별 매핑</h3>
+  <table>
+    <thead><tr><th style="width:16%">단계</th><th>Agent 365 MCP <span class="muted">(01–04)</span></th><th>Work IQ MCP <span class="muted">(05–06)</span></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>1 · 인증</strong></td>
+        <td>01 · device-code · <strong>자체 앱</strong><br><code>.token_cache.json</code></td>
+        <td>05·06 내장 · interactive · <strong>MS 공개 클라이언트</strong><br><code>.workiq.token_cache.json</code></td>
+      </tr>
+      <tr>
+        <td><strong>2 · 시드</strong></td>
+        <td>02 · 메일·Teams에 샘플 주입</td>
+        <td class="muted">(02가 넣은 데이터 공유 — 재주입 없음)</td>
+      </tr>
+      <tr>
+        <td><strong>3 · 조회</strong></td>
+        <td>03 · <code>SearchMessages</code> 등 <strong>소스별 전용 도구</strong></td>
+        <td>05 · <code>search_paths</code> · <code>fetch</code> · <code>ask</code> <strong>범용 도구</strong></td>
+      </tr>
+      <tr>
+        <td><strong>3 · 취합</strong></td>
+        <td>04 · <strong>에이전트 루프</strong>(tool loop)</td>
+        <td>06 · <code>ask</code> 기반 <span class="muted">(에이전트 루프 옵션)</span></td>
+      </tr>
+      <tr>
+        <td><strong>4 · 저장</strong></td>
+        <td colspan="2">04·06 → <code>notebook/wiki/*.md</code> 저장 · (옵션) git 커밋</td>
+      </tr>
+    </tbody>
+  </table>
 </section>
 
 <!-- ============ TAB 8 : 데모 ============ -->

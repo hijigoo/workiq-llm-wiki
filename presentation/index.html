@@ -16,7 +16,7 @@
   html,body{margin:0;padding:0}
   body{
     font-family:"Apple SD Gothic Neo","Malgun Gothic","Segoe UI",Roboto,system-ui,sans-serif;
-    background:var(--bg); color:var(--ink); line-height:1.6; -webkit-font-smoothing:antialiased;
+    background:var(--bg); color:var(--ink); font-size:17px; line-height:1.72; -webkit-font-smoothing:antialiased;
   }
   /* ---------- Top bar ---------- */
   header.topbar{
@@ -34,7 +34,7 @@
   nav.tabs{display:flex;gap:4px;padding:2px 18px 10px;overflow-x:auto;flex-wrap:wrap}
   .tab-btn{
     border:1px solid transparent;background:transparent;color:var(--muted);
-    font-size:13px;font-weight:600;padding:7px 13px;border-radius:9px;cursor:pointer;white-space:nowrap;
+    font-size:14.5px;font-weight:600;padding:8px 15px;border-radius:9px;cursor:pointer;white-space:nowrap;
     font-family:inherit;transition:all .15s;
   }
   .tab-btn .n{opacity:.55;margin-right:6px;font-variant-numeric:tabular-nums}
@@ -42,136 +42,135 @@
   .tab-btn.active{background:var(--brand);color:#fff;box-shadow:var(--shadow)}
   .tab-btn.active .n{opacity:.8}
   /* ---------- Layout ---------- */
-  main{max-width:1120px;margin:0 auto;padding:30px 26px 90px}
+  main{max-width:1180px;margin:0 auto;padding:34px 30px 110px}
   .tab-panel{display:none;animation:fade .25s ease}
   .tab-panel.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-  .eyebrow{font-size:12.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.10em}
-  h2.title{font-size:30px;margin:6px 0 4px;letter-spacing:-.5px;font-weight:800}
-  .lead{color:var(--muted);font-size:15.5px;margin:0 0 22px;max-width:820px}
-  h3{font-size:18px;margin:30px 0 12px;font-weight:750;letter-spacing:-.2px}
+  .eyebrow{font-size:13.5px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.10em}
+  h2.title{font-size:36px;margin:8px 0 6px;letter-spacing:-.5px;font-weight:800}
+  .lead{color:var(--muted);font-size:19px;margin:0 0 30px;max-width:960px;line-height:1.62}
+  h3{font-size:23px;margin:42px 0 16px;font-weight:750;letter-spacing:-.2px}
   h3 .k{color:var(--brand)}
-  p{margin:0 0 12px}
-  ul,ol{margin:0 0 12px;padding-left:20px}
-  li{margin:4px 0}
-  code{background:#eef1f8;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:12.5px;
+  p{margin:0 0 13px}
+  ul,ol{margin:0 0 13px;padding-left:22px}
+  li{margin:7px 0}
+  code{background:#eef1f8;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:14px;
     font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace}
   strong{font-weight:750}
   a{color:var(--brand);text-decoration:none;border-bottom:1px dashed #c7cbe0}
   /* ---------- Cards & grids ---------- */
-  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
-  .grid{display:grid;gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow)}
+  .grid{display:grid;gap:20px}
   .g2{grid-template-columns:1fr 1fr}
   .g3{grid-template-columns:repeat(3,1fr)}
   .g4{grid-template-columns:repeat(4,1fr)}
-  @media (max-width:840px){.g2,.g3,.g4{grid-template-columns:1fr}}
-  .card h4{margin:0 0 8px;font-size:15px;font-weight:750;display:flex;align-items:center;gap:8px}
-  .card .num{width:24px;height:24px;border-radius:7px;background:var(--brand-soft);color:var(--brand);
-    display:grid;place-items:center;font-size:13px;font-weight:800;flex:none}
+  @media (max-width:900px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card h4{margin:0 0 12px;font-size:18px;font-weight:750;display:flex;align-items:center;gap:9px}
+  .card .num{width:28px;height:28px;border-radius:8px;background:var(--brand-soft);color:var(--brand);
+    display:grid;place-items:center;font-size:15px;font-weight:800;flex:none}
   .card.soft{background:linear-gradient(180deg,#fbfcff,#f4f6ff);border-color:#e2e6f4}
   .muted{color:var(--muted)}
-  .small{font-size:13px}
-  .tiny{font-size:12px;color:var(--muted)}
+  .small{font-size:15px}
+  .tiny{font-size:13px;color:var(--muted)}
   /* ---------- Callouts ---------- */
-  .callout{border-radius:12px;padding:13px 16px;margin:14px 0;font-size:13.5px;border:1px solid}
-  .callout .lbl{font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:3px}
+  .callout{border-radius:12px;padding:16px 18px;margin:16px 0;font-size:15.5px;border:1px solid;line-height:1.6}
+  .callout .lbl{font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
   .callout.info{background:#eef6ff;border-color:#cfe4fb;color:#134e8f}
   .callout.warn{background:#fff7ed;border-color:#fde4c8;color:#9a5a08}
   .callout.ok{background:#f0fdf4;border-color:#c7ecd4;color:#166534}
   .callout.accent{background:#f5f3ff;border-color:#e0d9fb;color:#5b3fc4}
   /* ---------- Pills / tags ---------- */
-  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--muted);margin:2px 3px 2px 0}
+  .pill{display:inline-block;font-size:13px;font-weight:700;padding:4px 12px;border-radius:20px;border:1px solid var(--line);background:#fff;color:var(--muted);margin:2px 3px 2px 0}
   .pill.b{background:var(--brand-soft);color:var(--brand);border-color:#dfe3fb}
   .pill.c{background:#ecfeff;color:#0e7490;border-color:#c7eef4}
   .pill.g{background:#f0fdf4;color:#15803d;border-color:#c7ecd4}
   .pill.o{background:#fff7ed;color:#b45309;border-color:#fde4c8}
   /* ---------- Tables ---------- */
-  table{border-collapse:collapse;width:100%;font-size:13px;background:#fff;border-radius:12px;overflow:hidden;
+  table{border-collapse:collapse;width:100%;font-size:15px;background:#fff;border-radius:12px;overflow:hidden;
     border:1px solid var(--line);box-shadow:var(--shadow)}
-  th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);vertical-align:top}
-  th{background:#f3f5fc;font-weight:750;font-size:12.5px;color:#333c54}
+  th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:#f3f5fc;font-weight:750;font-size:14px;color:#333c54}
   tr:last-child td{border-bottom:none}
-  td code{font-size:12px}
+  td code{font-size:13.5px}
   .chk{color:var(--ok);font-weight:800}
   .no{color:var(--muted)}
   /* ---------- Flow (pipeline steps) ---------- */
   .flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap}
-  .flow .step{flex:1;min-width:150px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);position:relative}
-  .flow .arrow{display:grid;place-items:center;width:34px;color:var(--brand);font-size:22px;flex:none}
-  .step .tag{font-size:11px;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
-  .step h5{margin:3px 0 5px;font-size:15px;font-weight:750}
-  .step p{font-size:12.5px;color:var(--muted);margin:0}
-  @media (max-width:840px){.flow{flex-direction:column}.flow .arrow{transform:rotate(90deg);width:100%;height:26px}}
+  .flow .step{flex:1;min-width:200px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px;box-shadow:var(--shadow);position:relative}
+  .flow .arrow{display:grid;place-items:center;width:42px;color:var(--brand);font-size:26px;flex:none}
+  .step .tag{font-size:12.5px;font-weight:800;color:var(--brand);text-transform:uppercase;letter-spacing:.05em}
+  .step h5{margin:5px 0 6px;font-size:17px;font-weight:750}
+  .step p{font-size:14.5px;color:var(--muted);margin:0}
+  @media (max-width:900px){.flow{flex-direction:column}.flow .arrow{transform:rotate(90deg);width:100%;height:30px}}
   /* ---------- Before/After ---------- */
-  .ba{display:grid;grid-template-columns:1fr 44px 1fr;align-items:center;gap:8px}
-  @media (max-width:840px){.ba{grid-template-columns:1fr}.ba .mid{transform:rotate(90deg)}}
-  .ba .mid{font-size:26px;color:var(--brand);text-align:center}
-  .box-bad{background:#fff5f5;border:1px solid #f6d6d6;border-radius:12px;padding:16px}
-  .box-good{background:#f2fbf5;border:1px solid #cdeedd;border-radius:12px;padding:16px}
-  .box-bad h5,.box-good h5{margin:0 0 8px;font-size:14px}
-  .chips .c{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 9px;margin:3px;font-size:12px;font-weight:600}
+  .ba{display:grid;grid-template-columns:1fr 52px 1fr;align-items:center;gap:10px}
+  @media (max-width:900px){.ba{grid-template-columns:1fr}.ba .mid{transform:rotate(90deg)}}
+  .ba .mid{font-size:32px;color:var(--brand);text-align:center}
+  .box-bad{background:#fff5f5;border:1px solid #f6d6d6;border-radius:12px;padding:20px}
+  .box-good{background:#f2fbf5;border:1px solid #cdeedd;border-radius:12px;padding:20px}
+  .box-bad h5,.box-good h5{margin:0 0 10px;font-size:16.5px}
+  .chips .c{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 12px;margin:4px;font-size:14px;font-weight:600}
   /* ---------- Code block ---------- */
-  pre{background:#0f1428;color:#e6e9f5;border-radius:12px;padding:15px 17px;overflow:auto;font-size:12.5px;
-    line-height:1.55;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;border:1px solid #1c2440;margin:12px 0}
+  pre{background:#0f1428;color:#e6e9f5;border-radius:12px;padding:18px 20px;overflow:auto;font-size:14px;
+    line-height:1.6;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;border:1px solid #1c2440;margin:14px 0}
   pre .c1{color:#7c85a8}    /* comment */
   pre .k1{color:#8ab4ff}    /* keyword/path */
   pre .s1{color:#7ee0a1}    /* string */
   pre .t1{color:#ffcf6b}    /* highlight */
   /* ---------- Principle ---------- */
-  .principle{border-left:4px solid var(--brand);background:#fff;border:1px solid var(--line);border-left-width:4px;border-radius:10px;padding:14px 16px}
-  .principle h5{margin:0 0 4px;font-size:15px}
-  .principle .why{font-size:12.5px;color:var(--muted)}
-  .principle .code-note{font-size:12px;margin-top:8px;background:#f3f5fc;border:1px solid var(--line);border-radius:8px;padding:7px 10px;color:#41496a}
+  .principle{border-left:5px solid var(--brand);background:#fff;border:1px solid var(--line);border-left-width:5px;border-radius:10px;padding:18px 20px}
+  .principle h5{margin:0 0 6px;font-size:17.5px}
+  .principle .why{font-size:14.5px;color:var(--muted)}
+  .principle .code-note{font-size:13.5px;margin-top:10px;background:#f3f5fc;border:1px solid var(--line);border-radius:8px;padding:10px 13px;color:#41496a}
   /* ---------- Diagrams ---------- */
-  .layer{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:var(--shadow);text-align:center}
-  .layer .t{font-weight:750;font-size:14px}
-  .layer .d{font-size:12px;color:var(--muted)}
-  .vsep{display:grid;place-items:center;color:var(--brand);font-size:20px;height:26px}
+  .layer{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow);text-align:center}
+  .layer .t{font-weight:750;font-size:17px}
+  .layer .d{font-size:14px;color:var(--muted)}
+  .vsep{display:grid;place-items:center;color:var(--brand);font-size:24px;height:34px}
   .stack{display:flex;flex-direction:column;gap:0}
-  .subboxes{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
-  .subbox{background:var(--brand-soft);border:1px solid #dfe3fb;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;color:var(--brand)}
+  .subboxes{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+  .subbox{background:var(--brand-soft);border:1px solid #dfe3fb;border-radius:8px;padding:8px 13px;font-size:14px;font-weight:600;color:var(--brand)}
   .subbox.c{background:#ecfeff;border-color:#c7eef4;color:#0e7490}
   .subbox.g{background:#f0fdf4;border-color:#c7ecd4;color:#15803d}
-  .figcap{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
-  img.shot{width:100%;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);background:#fff}
+  .figcap{font-size:14px;color:var(--muted);text-align:center;margin-top:12px}
   /* ---------- Identity split ---------- */
-  .idcol{border-radius:12px;padding:16px;border:1px solid var(--line)}
+  .idcol{border-radius:12px;padding:20px;border:1px solid var(--line)}
   .idcol.a{background:#eff6ff;border-color:#cfe0fb}
   .idcol.b{background:#f5f3ff;border-color:#e0d9fb}
-  .idcol h5{margin:0 0 6px;font-size:15px}
+  .idcol h5{margin:0 0 8px;font-size:17.5px}
   /* ---------- UI mockup ---------- */
   .mock{border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);background:#fff}
-  .mock .bar{background:#f3f5fc;border-bottom:1px solid var(--line);padding:9px 13px;display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
-  .mock .dot{width:10px;height:10px;border-radius:50%;background:#e4574c}
+  .mock .bar{background:#f3f5fc;border-bottom:1px solid var(--line);padding:11px 15px;display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted)}
+  .mock .dot{width:11px;height:11px;border-radius:50%;background:#e4574c}
   .mock .dot.y{background:#e9b949}.mock .dot.g{background:#3fb559}
-  .mock .body{display:grid;grid-template-columns:290px 1fr;min-height:230px}
-  .mock .side{border-right:1px solid var(--line);padding:13px;background:#fafbff}
-  .mock .side .field{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--muted);margin-bottom:9px}
-  .mock .side .btn{background:var(--brand);color:#fff;text-align:center;border-radius:8px;padding:8px;font-size:12.5px;font-weight:700}
-  .mock .main{padding:13px}
-  .mock .ed{background:#0f1428;color:#cfe0ff;border-radius:8px;padding:11px;font-size:11.5px;height:150px;overflow:hidden;font-family:"SF Mono",monospace}
-  .mock .commit{display:flex;gap:8px;margin-top:10px}
-  .mock .commit .f{flex:1;background:#fff;border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:11.5px;color:var(--muted)}
-  .mock .commit .btn{background:#16a34a;color:#fff;border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700}
+  .mock .body{display:grid;grid-template-columns:330px 1fr;min-height:280px}
+  .mock .side{border-right:1px solid var(--line);padding:16px;background:#fafbff}
+  .mock .side .field{background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:13.5px;color:var(--muted);margin-bottom:11px}
+  .mock .side .btn{background:var(--brand);color:#fff;text-align:center;border-radius:8px;padding:10px;font-size:14px;font-weight:700}
+  .mock .main{padding:16px}
+  .mock .ed{background:#0f1428;color:#cfe0ff;border-radius:8px;padding:14px;font-size:13px;height:185px;overflow:hidden;font-family:"SF Mono",monospace;line-height:1.55}
+  .mock .commit{display:flex;gap:8px;margin-top:12px}
+  .mock .commit .f{flex:1;background:#fff;border:1px solid var(--line);border-radius:8px;padding:9px 11px;font-size:13px;color:var(--muted)}
+  .mock .commit .btn{background:#16a34a;color:#fff;border-radius:8px;padding:9px 14px;font-size:13.5px;font-weight:700}
   .stepnum{list-style:none;padding:0;counter-reset:s}
-  .stepnum li{counter-increment:s;position:relative;padding:8px 0 8px 40px;border-bottom:1px dashed var(--line)}
+  .stepnum li{counter-increment:s;position:relative;padding:11px 0 11px 48px;border-bottom:1px dashed var(--line);font-size:15.5px}
   .stepnum li:last-child{border-bottom:none}
-  .stepnum li::before{content:counter(s);position:absolute;left:0;top:8px;width:26px;height:26px;border-radius:8px;
-    background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px}
+  .stepnum li::before{content:counter(s);position:absolute;left:0;top:10px;width:30px;height:30px;border-radius:9px;
+    background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
   /* details */
-  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:2px 16px;margin:12px 0;box-shadow:var(--shadow)}
-  details>summary{cursor:pointer;font-weight:750;padding:12px 0;font-size:14.5px;list-style:none}
+  details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:2px 18px;margin:14px 0;box-shadow:var(--shadow)}
+  details>summary{cursor:pointer;font-weight:750;padding:14px 0;font-size:16.5px;list-style:none}
   details>summary::-webkit-details-marker{display:none}
   details>summary::before{content:"▸ ";color:var(--brand)}
   details[open]>summary::before{content:"▾ "}
   /* footer nav */
-  .pager{display:flex;justify-content:space-between;margin-top:34px;gap:12px}
-  .pager button{font-family:inherit;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 16px;
-    font-size:13px;font-weight:650;cursor:pointer;color:var(--ink);box-shadow:var(--shadow)}
+  .pager{display:flex;justify-content:space-between;margin-top:40px;gap:12px}
+  .pager button{font-family:inherit;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 20px;
+    font-size:15px;font-weight:650;cursor:pointer;color:var(--ink);box-shadow:var(--shadow)}
   .pager button:hover{border-color:var(--brand);color:var(--brand)}
   .pager button:disabled{opacity:.4;cursor:default}
-  .seq{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
-  .kbd{font-size:11px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:#fff;font-family:monospace}
+  .seq{width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:6px}
+  .kbd{font-size:12.5px;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:1px 6px;background:#fff;font-family:monospace}
 </style>
 </head>
 <body>
@@ -221,9 +220,23 @@
         컨플루언스에는 문서가 잘 정리되지만, <strong>팀즈·메일의 대화형 암묵지</strong>는 수집·정리되지 않는다. 이 암묵지의 KB화가 이 과제의 출발점.</div>
     </div>
     <div class="card">
-      <h4><span class="num">▤</span>과제 목표 &amp; 기존 시스템 분석 (원본)</h4>
-      <img class="shot" src="assets/goals-analysis.png" alt="과제 목표와 기존 시스템 분석" />
-      <div class="figcap">기존: Spring Boot + ORM + React / PostgreSQL·MongoDB·Redis, CI/CD ArgoCD·Rancher, PR·TDD 문화 부족.</div>
+      <h4><span class="num">▤</span>기존 시스템 (As-Is)</h4>
+      <svg class="seq" viewBox="0 0 480 250" role="img" aria-label="기존 시스템 As-Is 스택">
+        <rect x="20" y="12" width="440" height="42" rx="9" fill="#eef2ff" stroke="#6366f1"/>
+        <text x="240" y="31" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3730a3">프론트엔드</text>
+        <text x="240" y="47" text-anchor="middle" font-size="11" fill="#5b6478">React SPA</text>
+        <rect x="20" y="62" width="440" height="42" rx="9" fill="#fff" stroke="#c7cbe0"/>
+        <text x="240" y="81" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e2233">백엔드</text>
+        <text x="240" y="97" text-anchor="middle" font-size="11" fill="#5b6478">Spring Boot + ORM</text>
+        <rect x="20" y="112" width="440" height="42" rx="9" fill="#fff" stroke="#c7cbe0"/>
+        <text x="240" y="131" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e2233">데이터</text>
+        <text x="240" y="147" text-anchor="middle" font-size="11" fill="#5b6478">PostgreSQL · MongoDB · Redis</text>
+        <rect x="20" y="162" width="440" height="42" rx="9" fill="#fff" stroke="#c7cbe0"/>
+        <text x="240" y="181" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1e2233">CI / CD · 운영</text>
+        <text x="240" y="197" text-anchor="middle" font-size="11" fill="#5b6478">ArgoCD · Rancher</text>
+        <rect x="20" y="212" width="440" height="30" rx="9" fill="#fff7ed" stroke="#f59e0b"/>
+        <text x="240" y="231" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">지식 공백 — PR/TDD 문화 부족 · 대화형 암묵지 미수집</text>
+      </svg>
     </div>
   </div>
 
@@ -248,17 +261,41 @@
   <div class="callout info"><span class="lbl">스코프 정직하게</span>
     현재 <strong>실제 추출 소스는 Mail·Teams</strong>. Confluence·Jira·Azure Monitor·GitHub는 <strong>지향하는 문제 영역(비전)</strong>이며 아직 연동 대상이 아니다.</div>
 
-  <h3>초기 구상 스케치</h3>
-  <div class="grid g2">
-    <div><img class="shot" src="assets/sketch-architecture.png" alt="초기 손그림 아키텍처" /></div>
-    <div class="card soft">
-      <h4>스케치 → 현재 → 향후</h4>
-      <p class="small">초기 구상은 GitHub PR·Teams·Confluence·Jira·Email 등 <strong>여러 소스</strong>를 Azure Function(또는 Durable)이 Fetch → LLM 정제 → Wiki 링크 생성 → GitHub KB Repo 커밋하고, Azure Container App의 <strong>대시보드</strong>로 보여주는 그림.</p>
-      <ul class="small">
-        <li><span class="pill g">현재</span> Mail·Teams 추출 → 위키 초안 → 사람이 리뷰·커밋 (로컬)</li>
-        <li><span class="pill o">향후</span> Function/Queue/Blob/Container App 배포 (탭 6 참고)</li>
-      </ul>
-    </div>
+  <h3>초기 구상 스케치 <span class="muted" style="font-size:15px;font-weight:400">— 손그림을 다이어그램으로</span></h3>
+  <svg class="seq" viewBox="0 0 900 200" role="img" aria-label="초기 구상 아키텍처 흐름">
+    <defs><marker id="ah3" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4f46e5"/></marker></defs>
+    <rect x="12" y="58" width="158" height="84" rx="10" fill="#fff" stroke="#c7cbe0"/>
+    <text x="91" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#1e2233">여러 소스</text>
+    <text x="91" y="108" text-anchor="middle" font-size="12.5" fill="#5b6478">Email · Teams</text>
+    <text x="91" y="126" text-anchor="middle" font-size="12.5" fill="#5b6478">Confluence · Jira · GitHub</text>
+    <line x1="170" y1="100" x2="198" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
+    <rect x="200" y="58" width="176" height="84" rx="10" fill="#eef2ff" stroke="#6366f1"/>
+    <text x="288" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#3730a3">Azure Function</text>
+    <text x="288" y="108" text-anchor="middle" font-size="12.5" fill="#5b6478">Fetch · LLM 정제</text>
+    <text x="288" y="126" text-anchor="middle" font-size="12.5" fill="#5b6478">Wiki 링크 생성</text>
+    <line x1="376" y1="100" x2="404" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
+    <rect x="406" y="58" width="140" height="84" rx="10" fill="#fff" stroke="#c7cbe0"/>
+    <text x="476" y="88" text-anchor="middle" font-size="15" font-weight="700" fill="#1e2233">Queue · Blob</text>
+    <text x="476" y="108" text-anchor="middle" font-size="12.5" fill="#5b6478">비동기 처리</text>
+    <text x="476" y="126" text-anchor="middle" font-size="12.5" fill="#5b6478">원본 보관</text>
+    <line x1="546" y1="100" x2="574" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
+    <rect x="588" y="18" width="126" height="28" rx="14" fill="#fff7ed" stroke="#f59e0b"/>
+    <text x="651" y="37" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">사람 리뷰·커밋</text>
+    <line x1="651" y1="46" x2="651" y2="57" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="576" y="58" width="150" height="84" rx="10" fill="#f0fdf4" stroke="#22c55e"/>
+    <text x="651" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#166534">GitHub KB Repo</text>
+    <text x="651" y="114" text-anchor="middle" font-size="12.5" fill="#4d7c53">커밋되는 위키</text>
+    <line x1="726" y1="100" x2="754" y2="100" stroke="#4f46e5" stroke-width="1.5" marker-end="url(#ah3)"/>
+    <rect x="756" y="58" width="138" height="84" rx="10" fill="#ecfeff" stroke="#06b6d4"/>
+    <text x="825" y="94" text-anchor="middle" font-size="15" font-weight="700" fill="#0e7490">Container App</text>
+    <text x="825" y="114" text-anchor="middle" font-size="12.5" fill="#5b6478">대시보드 UI</text>
+  </svg>
+  <div class="figcap">여러 소스 → Azure Function → Queue·Blob → GitHub KB Repo(사람 리뷰·커밋) → Container App 대시보드</div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card soft"><h4><span class="pill g">현재</span> 되어 있는 것</h4>
+      <p class="small">Mail·Teams 추출 → 위키 초안 → 사람이 리뷰·커밋 (로컬 실행).</p></div>
+    <div class="card soft"><h4><span class="pill o">향후</span> 지향</h4>
+      <p class="small">Function·Queue·Blob·Container App 클라우드 배포 (탭 6 참고).</p></div>
   </div>
 </section>
 

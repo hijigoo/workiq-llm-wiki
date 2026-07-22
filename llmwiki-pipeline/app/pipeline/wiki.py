@@ -71,6 +71,34 @@ def read_doc(filename: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def delete_doc(filename: str, commit: bool = True, message: str | None = None) -> dict:
+    """Delete a wiki doc from disk and (optionally) commit its removal.
+
+    Returns ``{"filename", "deleted", "commit"}``. ``commit`` is None when the
+    caller opted out; otherwise it is the ``git_commit`` result (which reports
+    ``committed: False`` when the file was untracked, i.e. nothing to commit)."""
+    path = (wiki_path() / filename).resolve()
+    _assert_within_wiki(path)
+    if path.suffix != ".md":
+        raise ValueError("위키 문서(.md)만 삭제할 수 있습니다.")
+    if not path.exists():
+        raise FileNotFoundError(f"문서를 찾을 수 없습니다: {filename}")
+
+    title = ""
+    try:
+        title = _parse_title(path.read_text(encoding="utf-8"))
+    except Exception:  # noqa: BLE001
+        pass
+
+    path.unlink()
+
+    commit_result = None
+    if commit:
+        msg = message or f"docs(wiki): remove {title or path.stem}"
+        commit_result = git_commit([path], msg)
+    return {"filename": path.name, "deleted": True, "commit": commit_result}
+
+
 def _assert_within_wiki(path: Path) -> None:
     wiki = wiki_path().resolve()
     if wiki not in path.parents and path != wiki:

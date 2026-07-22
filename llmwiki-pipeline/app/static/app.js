@@ -92,8 +92,21 @@ async function refreshDocs() {
     }
     for (const d of docs) {
       const li = document.createElement("li");
-      li.innerHTML = `${d.title}<span class="fn">${d.filename}</span>`;
-      li.onclick = () => loadDoc(d.filename);
+      const label = document.createElement("span");
+      label.className = "doc-label";
+      label.innerHTML = `${d.title}<span class="fn">${d.filename}</span>`;
+      label.onclick = () => loadDoc(d.filename);
+      const del = document.createElement("button");
+      del.className = "doc-del";
+      del.type = "button";
+      del.title = "문서 삭제";
+      del.textContent = "🗑";
+      del.onclick = (e) => {
+        e.stopPropagation();
+        deleteDoc(d.filename, d.title);
+      };
+      li.appendChild(label);
+      li.appendChild(del);
       ul.appendChild(li);
     }
   } catch (e) {
@@ -111,6 +124,31 @@ async function loadDoc(filename) {
     $("draftMeta").textContent = `불러옴: ${filename}`;
   } catch (e) {
     log("문서 로드 실패: " + e.message, "err");
+  }
+}
+
+async function deleteDoc(filename, title) {
+  const name = title ? `${title}\n(${filename})` : filename;
+  if (!confirm(`이 위키 문서를 삭제하고 삭제 커밋을 만들까요?\n\n${name}`)) return;
+  try {
+    const out = await api("/api/docs/" + encodeURIComponent(filename), { method: "DELETE" });
+    const c = out.commit || null;
+    if (c && c.committed) {
+      log(`삭제 + 커밋 완료: ${filename}\n${c.output || ""}`, "ok");
+    } else if (c) {
+      log(`삭제됨 (커밋할 변경 없음): ${filename} — ${c.output || ""}`, "ok");
+    } else {
+      log(`삭제됨: ${filename}`, "ok");
+    }
+    // If the editor is currently showing the deleted doc, clear it.
+    if ($("draftMeta").textContent.includes(filename)) {
+      $("editor").value = "";
+      $("commitBtn").disabled = true;
+      $("draftMeta").textContent = "";
+    }
+    refreshDocs();
+  } catch (e) {
+    log("문서 삭제 실패: " + e.message, "err");
   }
 }
 

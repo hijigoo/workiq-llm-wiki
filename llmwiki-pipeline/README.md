@@ -12,10 +12,10 @@ Teams와 Mail(Microsoft Work IQ **MCP** 서버)에서 **기술·노하우를 자
    → commit    (app/wiki/ 에 저장 + git commit — 해당 문서만)
 ```
 
-> ⚠️ **로컬·단일 사용자 전용.** 웹앱에는 자체 로그인이 없고, 캐시된 **하나의**
-> Microsoft 365 신원으로 동작합니다. 서버에 접근할 수 있는 사람은 누구나 그 신원으로
-> 데이터를 읽고 커밋할 수 있으니, **loopback(127.0.0.1) 밖으로 노출하지 마세요.**
-> 다중 사용자 배포는 사용자별 로그인(authorization-code)과 토큰 격리가 별도로 필요합니다.
+> ⚠️ **로컬·단일 사용자 전용.** 웹앱은 브라우저 로그인(authorization-code)을 제공하지만
+> 서버는 **단일 세션 · 단일 토큰 캐시**로 동작합니다. 서버에 접근할 수 있는 사람은 누구나 그
+> 신원으로 데이터를 읽고 커밋할 수 있으니, **loopback(127.0.0.1) 밖으로 노출하지 마세요.**
+> 다중 사용자 배포는 사용자별 세션·토큰 격리가 별도로 필요합니다.
 
 ---
 
@@ -155,16 +155,52 @@ jupyter lab        # 또는 VS Code에서 .venv 커널 선택
 
 ### 2) 웹앱으로 리뷰·커밋
 
-`01`에서 로그인이 끝나 토큰 캐시가 생기면 실행:
+웹앱은 노트북과 **독립적으로** 브라우저 로그인을 하며, **인증이 두 층**입니다. 이 순서를
+지켜야 추출이 성공합니다.
+
+#### ① LLM 인증 — 터미널 (Azure keyless일 때만)
+
+`.env`의 `AZURE_OPENAI_API_KEY`가 **비어 있으면** LLM은 `az login` 신원
+(`DefaultAzureCredential`)으로 인증합니다. 이때 az는 **Foundry 리소스를 소유한 테넌트/구독**에
+로그인돼 있어야 합니다. 아니면 추출 시 `400 Tenant provided in token does not match resource token`
+오류가 납니다.
+
+```bash
+az login --tenant <FOUNDRY_TENANT_ID>
+# 또는 이미 로그인돼 있으면 구독만 전환
+az account set --subscription <FOUNDRY_SUBSCRIPTION_ID>
+```
+
+> az 컨텍스트를 바꾼 뒤에는 **앱을 재시작**하세요. `AZURE_OPENAI_API_KEY`나 `OPENAI_API_KEY`를
+> 채워 키 방식으로 쓰면 이 단계는 필요 없습니다.
+
+#### ② 앱 실행
 
 ```bash
 cd app
 uvicorn main:app --reload --port 8000     # http://localhost:8000
 ```
 
-UI: **주제(자연어) + 날짜 범위 + 소스 선택 → 실행 → 초안 검토·수정 → 커밋.**
+#### ③ 브라우저 로그인 + 소스 연결 — MCP
+
+앱은 **authorization-code** 흐름을 씁니다(`CLIENT_SECRET`이 있으면 confidential client,
+없으면 PKCE public client). 앱 등록에 redirect URI **`http://localhost:8000/auth/callback`**
+가 등록돼 있어야 합니다(다르면 `.env`의 `REDIRECT_URI`로 지정). 소스마다 OAuth 리소스가 달라
+**소스별로** 로그인/동의합니다.
+
+1. 우상단 **로그인** 클릭 → Microsoft 로그인(`source=mail`로 시작) → **반드시 대상 테넌트
+   계정**으로 로그인(LLM용 az 테넌트와 동일 테넌트여야 함) → 복귀하면 로그인 완료 + **Mail** 연결.
+2. 각 소스 옆 **연결** 링크 클릭 → **Teams**(필요 시 **Work IQ**) 증분 동의 → 초록 표시.
+3. 쓸 소스만 체크 → **주제(자연어) + 날짜 범위** 입력 → **실행** → 초안 검토·수정 → **커밋**.
+
+> ⚠️ **Work IQ 연결**은 앱 등록에 위임 권한 `WorkIQAgent.Ask`(리소스
+> `fdcc1f02-fc51-4226-8753-f668596af7f7`) 동의가 있어야 합니다. 없으면 연결 시 동의 오류가
+> 납니다. 빠른 데모는 **Mail + Teams**만으로 충분합니다(Work IQ 체크 해제).
+
 커밋 시 `app/wiki/{YYYY-MM-DD}-{slug}.md`로 저장되고 **그 파일만** 이 레포에 커밋됩니다.
-엔드포인트: `GET /api/status`, `POST /api/run`, `POST /api/commit`, `GET /api/docs`, `GET /api/docs/{filename}`.
+문서 목록의 🗑 버튼으로 개별 문서를 삭제할 수 있습니다(선택 시 커밋).
+엔드포인트: `GET /api/status`, `POST /api/run`, `POST /api/commit`, `GET /api/docs`,
+`GET /api/docs/{filename}`, `DELETE /api/docs/{filename}`.
 
 ---
 

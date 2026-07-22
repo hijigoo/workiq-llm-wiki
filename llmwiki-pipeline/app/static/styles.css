@@ -84,9 +84,13 @@ textarea, input[type="text"], input[type="date"], input:not([type]) {
 .hint { margin: 8px 0 0; color: var(--sub); font-size: 12px; min-height: 14px; }
 
 .doc-list { list-style: none; margin: 0; padding: 0; }
-.doc-list li { padding: 7px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; border: 1px solid transparent; }
+.doc-list li { display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 6px; font-size: 13px; border: 1px solid transparent; }
 .doc-list li:hover { background: var(--bg); border-color: var(--border); }
+.doc-list li:hover .doc-del { opacity: 1; }
+.doc-list li .doc-label { flex: 1; min-width: 0; cursor: pointer; }
 .doc-list li .fn { color: var(--sub); font-size: 11px; display: block; }
+.doc-del { flex: none; opacity: 0; border: none; background: transparent; cursor: pointer; font-size: 13px; line-height: 1; padding: 4px 6px; border-radius: 6px; color: var(--sub); transition: opacity .12s, background .12s; }
+.doc-del:hover { background: var(--danger-bg, #fde8e8); color: var(--danger, #c0392b); }
 
 #editorPane { flex: 1; display: flex; flex-direction: column; min-width: 0; padding: 14px 16px; }
 .editor-head { display: flex; align-items: baseline; justify-content: space-between; }

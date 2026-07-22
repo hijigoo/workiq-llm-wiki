@@ -19,6 +19,7 @@ from __future__ import annotations
 import asyncio
 import json
 import sys
+import traceback
 from pathlib import Path
 from typing import Optional
 
@@ -51,6 +52,7 @@ from pipeline.config import SOURCES, SOURCE_KEYS, config, llm_provider  # noqa: 
 from pipeline.mcp_client import (  # noqa: E402
     call_tool,
     content_to_text,
+    describe_exc,
     list_tools,
     tool_input_schema,
 )
@@ -328,7 +330,8 @@ async def api_run(req: RunRequest, request: Request):
                 }
             )
         except Exception as exc:  # noqa: BLE001
-            queue.put_nowait({"type": "error", "error": str(exc)})
+            traceback.print_exc()
+            queue.put_nowait({"type": "error", "error": describe_exc(exc)})
         finally:
             queue.put_nowait(None)
 
@@ -375,6 +378,19 @@ def api_doc(filename: str):
         return {"filename": filename, "markdown": wiki.read_doc(filename)}
     except Exception as exc:  # noqa: BLE001
         return JSONResponse(status_code=404, content={"error": str(exc)})
+
+
+@app.delete("/api/docs/{filename}")
+def api_doc_delete(filename: str, commit: bool = True):
+    """Delete a wiki doc from disk; by default also git-commit the removal."""
+    try:
+        return wiki.delete_doc(filename, commit=commit)
+    except FileNotFoundError as exc:
+        return JSONResponse(status_code=404, content={"error": str(exc)})
+    except ValueError as exc:
+        return JSONResponse(status_code=400, content={"error": str(exc)})
+    except Exception as exc:  # noqa: BLE001
+        return JSONResponse(status_code=500, content={"error": str(exc)})
 
 
 @app.get("/")

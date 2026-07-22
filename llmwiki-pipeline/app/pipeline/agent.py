@@ -15,7 +15,7 @@ import os
 from typing import Any
 
 from .config import config, llm_provider, SOURCES
-from .mcp_client import content_to_text, tool_input_schema, with_mcps
+from .mcp_client import content_to_text, describe_exc, tool_input_schema, with_mcps
 
 
 def _emit(progress, message: str) -> None:
@@ -218,7 +218,7 @@ async def run_agent(
                 res = await clients[source_key].list_tools()
                 tools_by_source[source_key] = list(res.tools or [])
             except Exception as exc:  # noqa: BLE001
-                source_errors[source_key] = str(exc)
+                source_errors[source_key] = describe_exc(exc)
 
         tools, registry = build_toolset(tools_by_source)
         messages: list[dict] = [
@@ -292,7 +292,7 @@ async def run_agent(
                             if rhint:
                                 _emit(progress, f"   ↳ {rhint}")
                         except Exception as exc:  # noqa: BLE001
-                            result_text = f"ERROR calling {original_name}: {exc}"
+                            result_text = f"ERROR calling {original_name}: {describe_exc(exc)}"
 
                 trace.append(
                     {

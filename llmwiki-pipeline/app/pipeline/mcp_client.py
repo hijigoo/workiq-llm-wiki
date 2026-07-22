@@ -16,6 +16,27 @@ from mcp.client.streamable_http import streamablehttp_client
 from .config import source_or_raise
 
 
+def describe_exc(exc: BaseException, _depth: int = 0) -> str:
+    """Flatten an ``ExceptionGroup`` / ``__cause__`` chain into a readable string.
+
+    The MCP Streamable-HTTP transport wraps its read/write loops in ``anyio``
+    task groups, so a failure surfaces as a ``BaseExceptionGroup`` whose ``str()``
+    is the useless ``"unhandled errors in a TaskGroup (1 sub-exception)"``. This
+    recurses into ``.exceptions`` (and ``__cause__``/``__context__``) so the REAL
+    underlying error (e.g. an HTTP 401/403, a connection reset) is surfaced."""
+    if _depth > 8:
+        return f"{type(exc).__name__}: {exc}"
+    subs = getattr(exc, "exceptions", None)  # ExceptionGroup / BaseExceptionGroup
+    if subs:
+        inner = "; ".join(describe_exc(e, _depth + 1) for e in subs)
+        return inner or type(exc).__name__
+    label = f"{type(exc).__name__}: {exc}".rstrip(": ").strip()
+    cause = exc.__cause__ or exc.__context__
+    if cause is not None and cause is not exc:
+        return f"{label} (원인: {describe_exc(cause, _depth + 1)})"
+    return label
+
+
 def _auth_headers(access_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {access_token}"}
 
@@ -73,7 +94,7 @@ async def with_mcps(
                 await session.initialize()
                 opened[source_key] = session
             except Exception as exc:  # noqa: BLE001 - report per-source, keep going
-                errors[source_key] = str(exc)
+                errors[source_key] = describe_exc(exc)
         return await fn(opened, errors)
 
 
